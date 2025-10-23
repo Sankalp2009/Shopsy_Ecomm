@@ -1,0 +1,501 @@
+import React, { useState } from "react";
+import {
+  Input,
+  Box,
+  Field,
+  Button,
+  Heading,
+  Flex,
+  NativeSelect,
+  Text,
+  Container,
+  Stack,
+  Grid,
+} from "@chakra-ui/react";
+import { Toaster, toaster } from "../../components/ui/toaster.jsx";
+import { Link, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { Action_Type } from "../../Redux/Auth_Reducer/action.jsx";
+import {
+  User,
+  Mail,
+  Lock,
+  Image as ImageIcon,
+  ShieldCheck,
+  Sparkles,
+  CheckCircle,
+  ArrowRight,
+} from "lucide-react";
+
+const InitialState = {
+  name: "",
+  email: "",
+  password: "",
+  role: "User",
+  photo: "",
+};
+
+function Register() {
+  const [IsInput, setIsInput] = useState(InitialState);
+  const [isLoading, setIsLoading] = useState(false);
+  const nav = useNavigate();
+  const dispatch = useDispatch();
+
+  // ✅ Handle Input Change
+  const HandleChange = (e) => {
+    const { name, value } = e.target;
+    setIsInput((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // ✅ Handle Submit
+  const HandleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      dispatch({ type: Action_Type.SIGNUP_REQUEST });
+
+      const response = await fetch("http://127.0.0.1:8080/api/v1/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(IsInput),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Signup failed");
+      }
+
+      const { Token, User } = result;
+
+      dispatch({
+        type: Action_Type.SIGNUP_SUCCESS,
+        payload: { token: Token, user: User },
+      });
+
+      toaster.success({
+        title: "Welcome aboard! 🎉",
+        description: "Your account has been created successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      setIsInput(InitialState);
+      setTimeout(() => nav("/"), 1500);
+    } catch (error) {
+      toaster.error({
+        title: "Signup failed",
+        description: error.message || "Something went wrong",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      dispatch({ type: Action_Type.SIGNUP_FAILURE });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const benefits = [
+    { icon: CheckCircle, text: "Access to exclusive deals" },
+    { icon: CheckCircle, text: "Personalized recommendations" },
+    { icon: CheckCircle, text: "Fast & secure checkout" },
+    { icon: CheckCircle, text: "Track your orders in real-time" },
+  ];
+
+  return (
+    <Box minH="100vh" bg="linear-gradient(to bottom right, #f8fafc, #e2e8f0)" position="relative" overflow="hidden">
+      <Toaster />
+
+      {/* Decorative Background Elements */}
+      <Box
+        position="absolute"
+        top="-100px"
+        right="-100px"
+        width="400px"
+        height="400px"
+        bg="purple.100"
+        borderRadius="full"
+        opacity="0.3"
+        filter="blur(80px)"
+      />
+      <Box
+        position="absolute"
+        bottom="-150px"
+        left="-150px"
+        width="500px"
+        height="500px"
+        bg="pink.100"
+        borderRadius="full"
+        opacity="0.3"
+        filter="blur(80px)"
+      />
+
+      <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }} py={{ base: 8, md: 12 }}>
+        <Grid
+          templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
+          gap={{ base: 8, lg: 16 }}
+          alignItems="center"
+          minH={{ base: "auto", lg: "85vh" }}
+        >
+          {/* Left Side - Information Panel (Hidden on Mobile) */}
+          <Box display={{ base: "none", lg: "block" }} position="relative">
+            <Stack gap={8}>
+              {/* Header */}
+              <Box>
+                <Flex align="center" gap={2} mb={4}>
+                  <Box bg="purple.100" p={2} borderRadius="lg">
+                    <Sparkles size={24} color="#9333ea" />
+                  </Box>
+                  <Text fontSize="sm" fontWeight="bold" color="purple.600" textTransform="uppercase">
+                    Join Our Community
+                  </Text>
+                </Flex>
+                <Heading size={{ base: "2xl", md: "3xl", lg: "4xl" }} mb={4} lineHeight="1.2">
+                  Start Your Shopping
+                  <br />
+                  <Text as="span" bgGradient="to-r" gradientFrom="purple.600" gradientTo="pink.500" bgClip="text">
+                    Adventure Today
+                  </Text>
+                </Heading>
+                <Text fontSize={{ base: "md", lg: "lg" }} color="gray.600" maxW="500px">
+                  Create your free account and unlock access to thousands of amazing products with exclusive member benefits.
+                </Text>
+              </Box>
+
+              {/* Benefits List */}
+              <Stack gap={4}>
+                {benefits.map((benefit, index) => (
+                  <Flex
+                    key={index}
+                    align="center"
+                    gap={3}
+                    p={4}
+                    bg="white"
+                    borderRadius="xl"
+                    boxShadow="sm"
+                    transition="all 0.3s"
+                    _hover={{
+                      transform: "translateX(8px)",
+                      boxShadow: "md",
+                    }}
+                  >
+                    <Box bg="green.100" p={2} borderRadius="lg">
+                      <benefit.icon size={20} color="#10B981" />
+                    </Box>
+                    <Text fontWeight="medium" color="gray.700">
+                      {benefit.text}
+                    </Text>
+                  </Flex>
+                ))}
+              </Stack>
+
+              {/* Stats */}
+              <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                <Box textAlign="center" p={4} bg="white" borderRadius="xl" boxShadow="sm">
+                  <Text fontSize="2xl" fontWeight="bold" color="purple.600">
+                    50K+
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    Members
+                  </Text>
+                </Box>
+                <Box textAlign="center" p={4} bg="white" borderRadius="xl" boxShadow="sm">
+                  <Text fontSize="2xl" fontWeight="bold" color="blue.600">
+                    100K+
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    Products
+                  </Text>
+                </Box>
+                <Box textAlign="center" p={4} bg="white" borderRadius="xl" boxShadow="sm">
+                  <Text fontSize="2xl" fontWeight="bold" color="green.600">
+                    4.9★
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    Rating
+                  </Text>
+                </Box>
+              </Grid>
+            </Stack>
+          </Box>
+
+          {/* Right Side - Registration Form */}
+          <Flex justify="center" align="center">
+            <Box
+              w="full"
+              maxW="500px"
+              bg="white"
+              borderRadius="3xl"
+              boxShadow="0 20px 60px rgba(0, 0, 0, 0.1)"
+              p={{ base: 6, sm: 8, md: 10 }}
+              position="relative"
+              overflow="hidden"
+            >
+              {/* Decorative gradient bar */}
+              <Box
+                position="absolute"
+                top="0"
+                left="0"
+                right="0"
+                h="6px"
+                bgGradient="to-r"
+                gradientFrom="purple.500"
+                gradientTo="pink.500"
+              />
+
+              <Stack gap={6}>
+                {/* Header */}
+                <Box textAlign="center">
+                  <Flex justify="center" mb={4}>
+                    <Box
+                      bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                      p={4}
+                      borderRadius="2xl"
+                      boxShadow="0 8px 20px rgba(102, 126, 234, 0.3)"
+                    >
+                      <User size={32} color="white" />
+                    </Box>
+                  </Flex>
+                  <Heading size={{ base: "xl", md: "2xl" }} mb={2}>
+                    Create Account
+                  </Heading>
+                  <Text color="gray.600" fontSize={{ base: "sm", md: "md" }}>
+                    Fill in your details to get started
+                  </Text>
+                </Box>
+
+                {/* Form */}
+                <form onSubmit={HandleSubmit}>
+                  <Stack gap={4}>
+                    {/* Name Field */}
+                    <Field.Root>
+                      <Field.Label fontWeight="medium" fontSize="sm">
+                        Full Name
+                      </Field.Label>
+                      <Box position="relative">
+                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                          <User size={18} color="#9CA3AF" />
+                        </Box>
+                        <Input
+                          type="text"
+                          name="name"
+                          value={IsInput.name}
+                          onChange={HandleChange}
+                          placeholder="John Doe"
+                          pl="40px"
+                          h="48px"
+                          borderRadius="xl"
+                          borderColor="gray.300"
+                          _focus={{
+                            borderColor: "purple.500",
+                            boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.1)",
+                          }}
+                          required
+                        />
+                      </Box>
+                    </Field.Root>
+
+                    {/* Email Field */}
+                    <Field.Root>
+                      <Field.Label fontWeight="medium" fontSize="sm">
+                        Email Address
+                      </Field.Label>
+                      <Box position="relative">
+                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                          <Mail size={18} color="#9CA3AF" />
+                        </Box>
+                        <Input
+                          type="email"
+                          name="email"
+                          value={IsInput.email}
+                          onChange={HandleChange}
+                          placeholder="john@example.com"
+                          pl="40px"
+                          h="48px"
+                          borderRadius="xl"
+                          borderColor="gray.300"
+                          _focus={{
+                            borderColor: "purple.500",
+                            boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.1)",
+                          }}
+                          required
+                        />
+                      </Box>
+                    </Field.Root>
+
+                    {/* Password Field */}
+                    <Field.Root>
+                      <Field.Label fontWeight="medium" fontSize="sm">
+                        Password
+                      </Field.Label>
+                      <Box position="relative">
+                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                          <Lock size={18} color="#9CA3AF" />
+                        </Box>
+                        <Input
+                          type="password"
+                          name="password"
+                          value={IsInput.password}
+                          onChange={HandleChange}
+                          placeholder="••••••••"
+                          pl="40px"
+                          h="48px"
+                          borderRadius="xl"
+                          borderColor="gray.300"
+                          _focus={{
+                            borderColor: "purple.500",
+                            boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.1)",
+                          }}
+                          required
+                        />
+                      </Box>
+                      <Field.HelperText fontSize="xs" color="gray.500" mt={1}>
+                        Must be at least 8 characters long
+                      </Field.HelperText>
+                    </Field.Root>
+
+                    {/* Role Field */}
+                    {/* <Field.Root>
+                      <Field.Label fontWeight="medium" fontSize="sm">
+                        Account Type
+                      </Field.Label>
+                      <Box position="relative">
+                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                          <ShieldCheck size={18} color="#9CA3AF" />
+                        </Box>
+                        <NativeSelect.Root>
+                          <NativeSelect.Field
+                            name="role"
+                            value={IsInput.role}
+                            onChange={HandleChange}
+                            pl="40px"
+                            h="48px"
+                            borderRadius="xl"
+                            borderColor="gray.300"
+                            _focus={{
+                              borderColor: "purple.500",
+                              boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.1)",
+                            }}
+                          >
+                            <option value="User">Customer</option>
+                            <option value="Admin">Admin</option>
+                          </NativeSelect.Field>
+                          <NativeSelect.Indicator />
+                        </NativeSelect.Root>
+                      </Box>
+                    </Field.Root> */}
+
+                    {/* Photo URL Field */}
+                    <Field.Root>
+                      <Field.Label fontWeight="medium" fontSize="sm">
+                        Profile Photo URL (Optional)
+                      </Field.Label>
+                      <Box position="relative">
+                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                          <ImageIcon size={18} color="#9CA3AF" />
+                        </Box>
+                        <Input
+                          type="url"
+                          name="photo"
+                          value={IsInput.photo}
+                          onChange={HandleChange}
+                          placeholder="https://example.com/photo.jpg"
+                          pl="40px"
+                          h="48px"
+                          borderRadius="xl"
+                          borderColor="gray.300"
+                          _focus={{
+                            borderColor: "purple.500",
+                            boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.1)",
+                          }}
+                        />
+                      </Box>
+                    </Field.Root>
+
+                    {/* Submit Button */}
+                    <Button
+                      type="submit"
+                      w="full"
+                      h="52px"
+                      bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                      color="white"
+                      borderRadius="xl"
+                      fontSize="md"
+                      fontWeight="bold"
+                      _hover={{
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 8px 25px rgba(102, 126, 234, 0.4)",
+                      }}
+                      _active={{
+                        transform: "translateY(0)",
+                      }}
+                      transition="all 0.3s"
+                      loading={isLoading}
+                      loadingText="Creating account..."
+                    >
+                      <Flex align="center" gap={2}>
+                        Create Account
+                        <ArrowRight size={20} />
+                      </Flex>
+                    </Button>
+
+                    {/* Divider */}
+                    <Flex align="center" gap={3} my={2}>
+                      <Box flex="1" h="1px" bg="gray.200" />
+                      <Text fontSize="sm" color="gray.500" fontWeight="medium">
+                        Already a member?
+                      </Text>
+                      <Box flex="1" h="1px" bg="gray.200" />
+                    </Flex>
+
+                    {/* Login Link */}
+                    <Link to="/signin">
+                      <Button
+                        w="full"
+                        h="52px"
+                        variant="outline"
+                        colorPalette="purple"
+                        borderRadius="xl"
+                        fontSize="md"
+                        fontWeight="medium"
+                        _hover={{
+                          bg: "purple.50",
+                          transform: "translateY(-2px)",
+                        }}
+                        transition="all 0.3s"
+                      >
+                        Sign In Instead
+                      </Button>
+                    </Link>
+
+                    {/* Terms */}
+                    <Text fontSize="xs" color="gray.500" textAlign="center" px={4}>
+                      By creating an account, you agree to our{" "}
+                      <Text as="span" color="purple.600" fontWeight="medium" cursor="pointer">
+                        Terms of Service
+                      </Text>{" "}
+                      and{" "}
+                      <Text as="span" color="purple.600" fontWeight="medium" cursor="pointer">
+                        Privacy Policy
+                      </Text>
+                    </Text>
+                  </Stack>
+                </form>
+              </Stack>
+            </Box>
+          </Flex>
+        </Grid>
+      </Container>
+    </Box>
+  );
+}
+
+export default Register;

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import User from "./Model/userModel.js";
-dotenv.config({path:"./Config/config.env"});
+import dotenv from "dotenv";
+dotenv.config({path:"./config.env"});
 
 const seedSuperAdmin = async () => {
   try {

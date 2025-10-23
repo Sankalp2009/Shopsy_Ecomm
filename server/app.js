@@ -3,7 +3,7 @@ import cors from 'cors'
 import helmet from "helmet";
 import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
-import { generalLimiter} from './utils/rateLimiter.js'
+import { generalLimiter } from './Utils/rateLimiter.js'
 import userRoutes from "./Routes/userRoutes.js"
 import ProductRouter from './Routes/productRoutes.js'
 

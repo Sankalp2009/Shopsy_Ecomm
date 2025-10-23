@@ -1,6 +1,6 @@
 import express from "express";
 import * as ProductController from "../Controller/productController.js";
-import { Protected, restrictTo } from "../middleware/Protected.js";
+import { Protected, restrictTo } from "../Middleware/Protected.js";
 
 //This Way is destructured, we can also do it.
 // const {getAllTours,getToursById,createTours,updateTours,deleteTours} = require('../controllers/toursController');

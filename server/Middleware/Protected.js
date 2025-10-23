@@ -1,5 +1,5 @@
 import { verifyToken } from "../Utils/jwt.js";
-import User from "../Model/UserModel.js";
+import User from "../Model/userModel.js";
 
 const Protected = async (req, res, next) => {
   try {

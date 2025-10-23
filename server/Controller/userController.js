@@ -1,7 +1,11 @@
 import User from "../Model/userModel.js";
+
 import { createSendToken } from "../Utils/jwt.js"
+
 import bcrypt from "bcryptjs"
+
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const SUPER_ADMIN = {
@@ -9,6 +13,7 @@ const SUPER_ADMIN = {
   password: process.env.SUPER_ADMIN_PASSWORD,
   name: process.env.SUPER_ADMIN_NAME,
 };
+
 // Auth Routes
 // REGISTER USER
 export const Register = async(req, res)=>{

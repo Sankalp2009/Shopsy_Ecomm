@@ -41,4 +41,10 @@ app.get("/", (req, res, next)=>{
   res.send("Server Started")
 })
 
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'public, max-age=3600');
+  next();
+});
+
+
 export default app;

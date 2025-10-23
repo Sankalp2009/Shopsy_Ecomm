@@ -26,7 +26,8 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-
+// ✅ FIXED: Remove trailing slash from API URL
+const API_BASE_URL = "https://shopsy-ecomm.onrender.com/api/v1";
 const InitialState = {
   name: "",
   email: "",
@@ -50,21 +51,53 @@ function Register() {
     }));
   };
 
-  // ✅ Handle Submit
+  // ✅ OPTIMIZED: Better validation and error handling
   const HandleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation
+    if (!IsInput.name || !IsInput.email || !IsInput.password || !IsInput.photo) {
+      toaster.error({
+        title: "Validation Error",
+        description: "Please fill all required fields",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (IsInput.password.length < 8) {
+      toaster.error({
+        title: "Validation Error",
+        description: "Password must be at least 8 characters long",
+        duration: 3000,
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       dispatch({ type: Action_Type.SIGNUP_REQUEST });
 
-      const response = await fetch("https://shopsy-ecomm.onrender.com/api/v1/register", {
+      // ✅ Add timeout controller (10 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(IsInput),
+        body: JSON.stringify({
+          name: IsInput.name.trim(),
+          email: IsInput.email.trim(),
+          password: IsInput.password,
+          photo: IsInput.photo.trim(),
+        }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const result = await response.json();
 
@@ -74,6 +107,10 @@ function Register() {
 
       const { Token, User } = result;
 
+      // ✅ Store token in localStorage
+      localStorage.setItem("token", Token);
+      localStorage.setItem("user", JSON.stringify(User));
+
       dispatch({
         type: Action_Type.SIGNUP_SUCCESS,
         payload: { token: Token, user: User },
@@ -82,21 +119,29 @@ function Register() {
       toaster.success({
         title: "Welcome aboard! 🎉",
         description: "Your account has been created successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
+        duration: 2000,
       });
 
       setIsInput(InitialState);
-      setTimeout(() => nav("/"), 1500);
+      
+      setTimeout(() => nav("/"), 800);
     } catch (error) {
+      console.error("Signup error:", error);
+      
+      let errorMessage = "Something went wrong";
+      
+      if (error.name === "AbortError") {
+        errorMessage = "Request timeout. Please check your connection.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toaster.error({
         title: "Signup failed",
-        description: error.message || "Something went wrong",
-        status: "error",
+        description: errorMessage,
         duration: 3000,
-        isClosable: true,
       });
+      
       dispatch({ type: Action_Type.SIGNUP_FAILURE });
     } finally {
       setIsLoading(false);

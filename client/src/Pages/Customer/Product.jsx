@@ -22,7 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ProductCard from "../../Component/ProductCard.jsx";
 import FilterSidebar from "../../Component/FilterSidebar.jsx";
 
-const API_BASE_URL = "http://127.0.0.1:8080/api/v1/Products";
+const API_BASE_URL = "https://shopsy-ecomm.onrender.com/api/v1/Products";
 
 const getCurrentPage = (value) => {
   const pageNum = Number(value);

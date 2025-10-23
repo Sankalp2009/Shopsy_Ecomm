@@ -54,7 +54,7 @@ function Login() {
 
     try {
       dispatch({ type: Action_Type.LOGIN_REQUEST });
-      let Response = await fetch("http://127.0.0.1:8080/api/v1/login", {
+      let Response = await fetch("https://shopsy-ecomm.onrender.com/api/v1/login", {
         method: "post",
         headers: {
           "content-Type": "application/json",

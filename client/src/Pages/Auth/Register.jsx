@@ -58,7 +58,7 @@ function Register() {
     try {
       dispatch({ type: Action_Type.SIGNUP_REQUEST });
 
-      const response = await fetch("http://127.0.0.1:8080/api/v1/register", {
+      const response = await fetch("https://shopsy-ecomm.onrender.com/api/v1/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

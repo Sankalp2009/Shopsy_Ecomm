@@ -57,7 +57,7 @@ function ProductDetail() {
     try {
       dispatch({ type: Product.GET_REQUEST });
       const response = await axios.get(
-        `http://127.0.0.1:8080/api/v1/Products/${id}`,
+        `https://shopsy-ecomm.onrender.com/api/v1/Products/${id}`,
         {
           headers: {
             "Content-Type": "application/json",

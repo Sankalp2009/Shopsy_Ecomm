@@ -206,6 +206,7 @@ function Admin() {
     );
   }
 
+  // eslint-disable-next-line no-unused-vars
   const StatCard = ({ title, value, icon: Icon, color, trend }) => (
     <Box
       bg="white"

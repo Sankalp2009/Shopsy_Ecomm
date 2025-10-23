@@ -14,7 +14,11 @@ app.set("trust proxy", 1); // ✅ Required for correct IP detection
 
 
 // Using Middleware
-app.use(cors());
+app.use(cors({
+  origin: ["https://shopsy-ecomm-eight.vercel.app/"], // your deployed frontend
+  methods: ["GET", "POST", "PUT", "PATCH",  "DELETE"],
+  credentials: true,
+}));
 
 // Middleware Usage
 // set secure HTTP response header

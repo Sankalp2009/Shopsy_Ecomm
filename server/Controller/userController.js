@@ -98,41 +98,53 @@ export const Register = async(req, res)=>{
 }
 
 
-// LOGIN
 export const Login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     // Step 1: Validate input
     if (!email || !password) {
       return res.status(400).json({
         status: "fail",
-        message: "Please provide valid email and password.",
+        message: "Please provide both email and password.",
       });
     }
-    
-    // Step 2: Find user and include password
-    const user = await User.findOne({ email }).select("+password");
 
-    // Step 3: Verify user exists and password is correct
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const plainPassword = password.trim();
+
+    // Step 2: Fetch user with password
+    // Using .lean() for faster read since we don’t need mongoose doc methods
+    const user = await User.findOne({ email: normalizedEmail })
+      .select("+password")
+      .lean(); // returns plain JS object, lighter & faster
+
+    if (!user) {
       return res.status(401).json({
         status: "fail",
-        message: "Invalid email or password",
+        message: "Invalid email or password.",
       });
     }
 
-    // Step 4: Remove password from output
-    user.password = undefined;
+    // Step 3: Compare password securely
+    const isMatch = await bcrypt.compare(plainPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        status: "fail",
+        message: "Invalid email or password.",
+      });
+    }
 
-    // Step 5: Send token and user data
-    createSendToken(user, 200, res, "Login successful");
-    
+    // Step 4: Clean output
+    delete user.password; // safely remove password before sending
+
+    // Step 5: Send token response
+    return createSendToken(user, 200, res, "Login successful");
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({
-      status: "fail",
-      message: error.message || "Error logging in",
+      status: "error",
+      message: "Internal server error during login.",
     });
   }
 };

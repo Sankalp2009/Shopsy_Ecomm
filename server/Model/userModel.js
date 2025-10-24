@@ -39,7 +39,7 @@ userSchema.pre('save', async function(next){
 // Only hash password if it's modified or new
   if (!this.isModified("password")) return next();
   try {
-    this.password = await bcrypt.hash(this.password, 12);
+    this.password = await bcrypt.hash(this.password, 10);
   next();
   } catch (error) {
     next(error);

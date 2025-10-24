@@ -17,7 +17,7 @@ export const reducer = (currentState = InitialState, action) => {
       return {
         ...currentState,
         access_token: payload.token,
-        user: payload.User,
+        user: payload.user,
         IsAuth: true,
         IsLoading: false,
       };
@@ -36,7 +36,7 @@ export const reducer = (currentState = InitialState, action) => {
       return {
          ...currentState,
         access_token: payload.token,
-        user: payload.User,
+        user: payload.user,
         IsAuth: true,
         IsLoading: false,
       };

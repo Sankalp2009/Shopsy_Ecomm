@@ -27,7 +27,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 // ✅ FIXED: Remove trailing slash from API URL
+
 const API_BASE_URL = "https://shopsy-ecomm.onrender.com/api/v1";
+
 const InitialState = {
   name: "",
   email: "",
@@ -81,6 +83,7 @@ function Register() {
 
       // ✅ Add timeout controller (10 seconds)
       const controller = new AbortController();
+      
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(`${API_BASE_URL}/register`, {

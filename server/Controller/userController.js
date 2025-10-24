@@ -16,21 +16,100 @@ const SUPER_ADMIN = {
 
 // Auth Routes
 // REGISTER USER
-export const Register = async(req, res)=>{
-   try {
-    const { name, email, password, photo } = req.body;
-    console.log("📝 Register attempt:", { name, email,  photo, password: password ? "***" : "missing" });
+// export const Register = async(req, res)=>{
+//    try {
+//     const { name, email, password, photo } = req.body;
+//     console.log("📝 Register attempt:", { name, email,  photo, password: password ? "***" : "missing" });
 
-    // Check if all required fields are provided
-    if (!name || !email || !password || !photo) {
+//     // Check if all required fields are provided
+//     if (!name || !email || !password || !photo) {
+//       return res.status(400).json({
+//         status: "Fail",
+//         message: "Please provide all required fields: name, email,  password, photo"
+//       });
+//     }
+    
+//     // ✅ SECURITY: Block admin role registration
+//     // Only allow registering as regular user
+//     if (email.toLowerCase() === SUPER_ADMIN.email.toLowerCase()) {
+//       return res.status(400).json({
+//         status: "fail",
+//         message: "This email is reserved. Please use a different email.",
+//       });
+//     }
+
+
+//     // Check for existing user
+//     const ExistUser = await User.findOne({ email });
+//     console.log("🔍 Existing user check:", ExistUser ? "User exists" : "No user found");
+    
+//     if (ExistUser) {
+//       return res.status(400).json({
+//         status: "Fail",
+//         message: "User already exists",
+//       });
+//     }
+
+//     console.log("✅ Creating new user...");
+//     // ✅ Create user with FORCED role as "user"
+//     // Ignore any role sent in request body
+//     const newUser = await User.create({
+//       name,
+//       email,
+//       role: "user",
+//       photo: photo || "",
+//       password: password,
+//     });
+
+//     console.log("✅ User created:", { id: newUser._id, email: newUser.email });
+    
+//     // Call createSendToken
+//     console.log("🔑 Calling createSendToken...");
+//     createSendToken(newUser, 201, res, "User registered successfully");
+
+
+//   } catch (error) {
+//     console.error("❌ Register error:", error);
+    
+//     // Handle duplicate key error
+//     if (error.code === 11000) {
+//       return res.status(400).json({
+//         status: "Fail",
+//         message: "Email already exists",
+//       });
+//     }
+
+//     // Handle validation errors
+//     if (error.name === 'ValidationError') {
+//       const errors = Object.values(error.errors).map(err => err.message);
+//       return res.status(400).json({
+//         status: "Fail",
+//         message: "Validation failed",
+//         errors: errors
+//       });
+//     }
+
+//     return res.status(500).json({
+//       status: "Fail",
+//       message: "Internal server error",
+//       error: process.env.NODE_ENV === 'development' ? error.message : undefined
+//     });
+//   }
+// }
+
+export const Register = async (req, res) => {
+  try {
+    const { name = "", email = "", password = "", photo = "" } = req.body;
+
+    // 1️⃣ Validate fields
+    if (!name.trim() || !email.trim() || !password.trim()) {
       return res.status(400).json({
-        status: "Fail",
-        message: "Please provide all required fields: name, email,  password, photo"
+        status: "fail",
+        message: "Please provide all required fields: name, email, and password.",
       });
     }
-    
-    // ✅ SECURITY: Block admin role registration
-    // Only allow registering as regular user
+
+    // 2️⃣ Prevent admin email registration
     if (email.toLowerCase() === SUPER_ADMIN.email.toLowerCase()) {
       return res.status(400).json({
         status: "fail",
@@ -38,65 +117,54 @@ export const Register = async(req, res)=>{
       });
     }
 
-
-    // Check for existing user
-    const ExistUser = await User.findOne({ email });
-    console.log("🔍 Existing user check:", ExistUser ? "User exists" : "No user found");
-    
-    if (ExistUser) {
+    // 3️⃣ Check existing user (use `.lean()` for faster read)
+    const existing = await User.findOne({ email: email.toLowerCase() }).lean();
+    if (existing) {
       return res.status(400).json({
-        status: "Fail",
-        message: "User already exists",
+        status: "fail",
+        message: "User already exists with this email.",
       });
     }
 
-    console.log("✅ Creating new user...");
-    // ✅ Create user with FORCED role as "user"
-    // Ignore any role sent in request body
+    // 4️⃣ Hash password before save (bcrypt cost = 10)
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 5️⃣ Create user (ignore role from client)
     const newUser = await User.create({
-      name,
-      email,
-      role: "user",
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password: hashedPassword,
       photo: photo || "",
-      password: password,
+      role: "user",
     });
 
-    console.log("✅ User created:", { id: newUser._id, email: newUser.email });
-    
-    // Call createSendToken
-    console.log("🔑 Calling createSendToken...");
-    createSendToken(newUser, 201, res, "User registered successfully");
-
-
+    // 6️⃣ Generate token
+    return createSendToken(newUser, 201, res, "User registered successfully.");
   } catch (error) {
-    console.error("❌ Register error:", error);
-    
-    // Handle duplicate key error
+    console.error("Register error:", error);
+
     if (error.code === 11000) {
       return res.status(400).json({
-        status: "Fail",
-        message: "Email already exists",
+        status: "fail",
+        message: "Email already registered.",
       });
     }
 
-    // Handle validation errors
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
-        status: "Fail",
-        message: "Validation failed",
-        errors: errors
+        status: "fail",
+        message: "Validation failed.",
+        errors,
       });
     }
 
     return res.status(500).json({
-      status: "Fail",
-      message: "Internal server error",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      status: "error",
+      message: "Internal server error during registration.",
     });
   }
-}
-
+};
 
 export const Login = async (req, res) => {
   try {

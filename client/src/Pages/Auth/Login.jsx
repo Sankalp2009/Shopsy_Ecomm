@@ -74,7 +74,7 @@ function Login() {
 
       dispatch({
         type: Action_Type.LOGIN_SUCCESS,
-        payload: { token: Token, User: User },
+        payload: { token: Token, user: User },
       });
 
       toaster.success({

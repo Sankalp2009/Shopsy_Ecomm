@@ -29,6 +29,7 @@ import { Action_Type as cart } from "../Redux/Cart_Reducer/action.jsx";
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { IsAuth, user } = useSelector((state) => state.auth);
+   console.log("Header",user);
   const isAdmin = user?.role === "admin";
   const nav = useNavigate();
   const { items } = useSelector((state) => state.cart);
@@ -222,7 +223,7 @@ function Header() {
                       transition="all 0.2s"
                     >
                       <Avatar.Fallback>
-                        {user?.name?.charAt(0) || "U"}
+                        {user?.name?.charAt(0) || "u"}
                       </Avatar.Fallback>
                       <Avatar.Image src={user?.photo} />
                     </Avatar.Root>

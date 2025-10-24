@@ -1,32 +1,30 @@
-// controllers/productController.js
-
 import Product from "../Model/productModel.js";
 import ApiFeature from "../Utils/ApiFeature.js";
+import mongoose from "mongoose";
+import {
+  isValidObjectId,
+  sanitizeProductData,
+} from "../Utils/IsValidObject.js";
 
 export const getAllProduct = async (req, res) => {
   try {
-    // Step 1: Build query with features
-    const features = new ApiFeature(Product.find(), req.query)
+    // 1️⃣ Build query features
+    const features = new ApiFeature(Product.find().lean(), req.query)
       .search()
       .filter()
       .sort()
       .paginate();
 
-    // Step 2: Execute query
-    const products = await features.exec();
+    // 2️⃣ Run product query + total count in parallel
+    const [products, totalProducts] = await Promise.all([
+      features.findQuery.exec(),
+      Product.countDocuments(features.findQuery.getFilter()),
+    ]);
 
-    // Step 3: Count total products with proper filter respect
-    // Build the same filter/search query for counting
-    const countFeatures = new ApiFeature(Product.find(), req.query)
-      .search()
-      .filter();
-
-    const totalProducts = await Product.countDocuments(
-      countFeatures.findQuery.getFilter()
-    );
+    // 3️⃣ Pagination calculation
     const totalPages = Math.ceil(totalProducts / features.limit);
 
-    // Step 4: Return success even if empty (frontend handles display)
+    // 4️⃣ Return success (frontend can handle empty state)
     return res.status(200).json({
       status: "success",
       result: products.length,
@@ -53,17 +51,17 @@ export const getAllProduct = async (req, res) => {
 
 export const getProductById = async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
-    // Validate ObjectId format
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!isValidObjectId(id)) {
       return res.status(400).json({
         status: "fail",
         message: "Invalid product ID format",
       });
     }
 
-    const product = await Product.findById(id).lean();
+    // Use lean() for better performance (returns plain JS object)
+    const product = await Product.findById(id).lean().exec();
 
     if (!product) {
       return res.status(404).json({
@@ -74,7 +72,7 @@ export const getProductById = async (req, res) => {
 
     return res.status(200).json({
       status: "success",
-      message: "Product found",
+      message: "Product retrieved successfully",
       data: product,
     });
   } catch (error) {
@@ -89,70 +87,65 @@ export const getProductById = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, brand, stock, image } =
-      req.body || {};
+    let products = req.body;
 
-    // Basic validation
-    if (
-      !name ||
-      !description ||
-      price === undefined ||
-      !category ||
-      !brand ||
-      stock === undefined ||
-      !image
-    ) {
+    // Handle case when a single product object is sent
+    if (!Array.isArray(products)) {
+      products = [products];
+    }
+
+    // Validate all products
+    const invalidProducts = products.filter(
+      (p) =>
+        !p.name ||
+        !p.description ||
+        p.price === undefined ||
+        !p.category ||
+        !p.brand ||
+        p.stock === undefined ||
+        !p.image
+    );
+
+    if (invalidProducts.length > 0) {
       return res.status(400).json({
         status: "fail",
         message:
-          "Please provide all required fields: name, description, price, category, brand, stock, image",
+          "Some products are missing required fields (name, description, price, category, brand, stock, image)",
       });
     }
 
-    // Validate numeric fields
-    const priceNum = parseFloat(price);
-    const stockNum = parseInt(stock, 10);
-
-    if (Number.isNaN(priceNum) || priceNum < 0) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Price must be a valid positive number",
-      });
-    }
-
-    if (Number.isNaN(stockNum) || stockNum < 0) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Stock must be a valid positive number",
-      });
-    }
-
-    // Prevent duplicate product by name (case-insensitive)
-    const existingProduct = await Product.findOne({
-      name: { $regex: `^${name.trim()}$`, $options: "i" },
+    // Check for duplicates (by name)
+    const existingNames = await Product.find({
+      name: { $in: products.map((p) => new RegExp(`^${p.name}$`, "i")) },
     });
 
-    if (existingProduct) {
+    if (existingNames.length > 0) {
       return res.status(400).json({
         status: "fail",
-        message: "Product with this name already exists",
+        message: `Duplicate product(s) found: ${existingNames
+          .map((p) => p.name)
+          .join(", ")}`,
       });
     }
 
-    const newProduct = await Product.create({
-      name: name.trim(),
-      description: description.trim(),
-      price: priceNum,
-      category: category.trim(),
-      brand: brand.trim(),
-      stock: stockNum,
-      image: image.trim(),
-    });
+    // Clean and parse data
+    const preparedProducts = products.map((p) => ({
+      name: p.name.trim(),
+      description: p.description.trim(),
+      price: parseFloat(p.price),
+      category: p.category.trim(),
+      brand: p.brand.trim(),
+      stock: parseInt(p.stock, 10),
+      image: p.image.trim(),
+    }));
+
+    // Bulk insert
+    const newProducts = await Product.insertMany(preparedProducts);
 
     return res.status(201).json({
       status: "success",
-      message: "Product created successfully",
-      data: newProduct,
+      message: `${newProducts.length} product(s) created successfully`,
+      data: newProducts,
     });
   } catch (error) {
     console.error("createProduct error:", error);
@@ -166,65 +159,25 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
-    // Validate ObjectId format
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!isValidObjectId(id)) {
       return res.status(400).json({
         status: "fail",
         message: "Invalid product ID format",
       });
     }
 
-    // Whitelist allowed fields
-    const allowedFields = [
-      "name",
-      "description",
-      "price",
-      "category",
-      "brand",
-      "stock",
-      "image",
-    ];
-    const updateData = {};
-
-    Object.keys(req.body || {}).forEach((key) => {
-      if (allowedFields.includes(key)) {
-        updateData[key] = req.body[key];
-      }
-    });
-
-    // Validate and convert numeric fields
-    if (updateData.price !== undefined) {
-      const priceNum = parseFloat(updateData.price);
-      if (Number.isNaN(priceNum) || priceNum < 0) {
-        return res.status(400).json({
-          status: "fail",
-          message: "Price must be a valid positive number",
-        });
-      }
-      updateData.price = priceNum;
+    let updateData;
+    try {
+      updateData = sanitizeProductData(req.body);
+    } catch (validationError) {
+      return res.status(400).json({
+        status: "fail",
+        message: validationError.message,
+      });
     }
 
-    if (updateData.stock !== undefined) {
-      const stockNum = parseInt(updateData.stock, 10);
-      if (Number.isNaN(stockNum) || stockNum < 0) {
-        return res.status(400).json({
-          status: "fail",
-          message: "Stock must be a valid positive number",
-        });
-      }
-      updateData.stock = stockNum;
-    }
-
-    // Trim string fields
-    ["name", "description", "category", "brand", "image"].forEach((field) => {
-      if (updateData[field]) {
-        updateData[field] = updateData[field].trim();
-      }
-    });
-
-    // Check if there's anything to update
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({
         status: "fail",
@@ -232,10 +185,12 @@ export const updateProduct = async (req, res) => {
       });
     }
 
+    // Use findByIdAndUpdate with runValidators for schema-level validation
     const updated = await Product.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
-    });
+      lean: true, // for faster response
+    }).exec();
 
     if (!updated) {
       return res.status(404).json({
@@ -261,17 +216,16 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
-    // Validate ObjectId format
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!isValidObjectId(id)) {
       return res.status(400).json({
         status: "fail",
         message: "Invalid product ID format",
       });
     }
 
-    const deleted = await Product.findByIdAndDelete(id);
+    const deleted = await Product.findByIdAndDelete(id).lean().exec();
 
     if (!deleted) {
       return res.status(404).json({
@@ -283,7 +237,7 @@ export const deleteProduct = async (req, res) => {
     return res.status(200).json({
       status: "success",
       message: "Product deleted successfully",
-      data: deleted,
+      data: { _id: deleted._id, name: deleted.name },
     });
   } catch (error) {
     console.error("deleteProduct error:", error);

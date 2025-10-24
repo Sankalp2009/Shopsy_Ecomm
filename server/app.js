@@ -77,8 +77,6 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-// Handle preflight requests explicitly
-app.options('*', cors());
 
 // Middleware Usage
 // set secure HTTP response header

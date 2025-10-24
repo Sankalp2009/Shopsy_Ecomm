@@ -58,7 +58,12 @@ function Register() {
     e.preventDefault();
 
     // Validation
-    if (!IsInput.name || !IsInput.email || !IsInput.password || !IsInput.photo) {
+    if (
+      !IsInput.name ||
+      !IsInput.email ||
+      !IsInput.password ||
+      !IsInput.photo
+    ) {
       toaster.error({
         title: "Validation Error",
         description: "Please fill all required fields",
@@ -83,7 +88,7 @@ function Register() {
 
       // ✅ Add timeout controller (10 seconds)
       const controller = new AbortController();
-      
+
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(`${API_BASE_URL}/register`, {
@@ -126,13 +131,13 @@ function Register() {
       });
 
       setIsInput(InitialState);
-      
+
       setTimeout(() => nav("/"), 800);
     } catch (error) {
       console.error("Signup error:", error);
-      
+
       let errorMessage = "Something went wrong";
-      
+
       if (error.name === "AbortError") {
         errorMessage = "Request timeout. Please check your connection.";
       } else if (error.message) {
@@ -144,7 +149,7 @@ function Register() {
         description: errorMessage,
         duration: 3000,
       });
-      
+
       dispatch({ type: Action_Type.SIGNUP_FAILURE });
     } finally {
       setIsLoading(false);
@@ -159,7 +164,12 @@ function Register() {
   ];
 
   return (
-    <Box minH="100vh" bg="linear-gradient(to bottom right, #f8fafc, #e2e8f0)" position="relative" overflow="hidden">
+    <Box
+      minH="100vh"
+      bg="linear-gradient(to bottom right, #f8fafc, #e2e8f0)"
+      position="relative"
+      overflow="hidden"
+    >
       <Toaster />
 
       {/* Decorative Background Elements */}
@@ -186,7 +196,11 @@ function Register() {
         filter="blur(80px)"
       />
 
-      <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }} py={{ base: 8, md: 12 }}>
+      <Container
+        maxW="7xl"
+        px={{ base: 4, sm: 6, lg: 8 }}
+        py={{ base: 8, md: 12 }}
+      >
         <Grid
           templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
           gap={{ base: 8, lg: 16 }}
@@ -202,19 +216,39 @@ function Register() {
                   <Box bg="purple.100" p={2} borderRadius="lg">
                     <Sparkles size={24} color="#9333ea" />
                   </Box>
-                  <Text fontSize="sm" fontWeight="bold" color="purple.600" textTransform="uppercase">
+                  <Text
+                    fontSize="sm"
+                    fontWeight="bold"
+                    color="purple.600"
+                    textTransform="uppercase"
+                  >
                     Join Our Community
                   </Text>
                 </Flex>
-                <Heading size={{ base: "2xl", md: "3xl", lg: "4xl" }} mb={4} lineHeight="1.2">
+                <Heading
+                  size={{ base: "2xl", md: "3xl", lg: "4xl" }}
+                  mb={4}
+                  lineHeight="1.2"
+                >
                   Start Your Shopping
                   <br />
-                  <Text as="span" bgGradient="to-r" gradientFrom="purple.600" gradientTo="pink.500" bgClip="text">
+                  <Text
+                    as="span"
+                    bgGradient="to-r"
+                    gradientFrom="purple.600"
+                    gradientTo="pink.500"
+                    bgClip="text"
+                  >
                     Adventure Today
                   </Text>
                 </Heading>
-                <Text fontSize={{ base: "md", lg: "lg" }} color="gray.600" maxW="500px">
-                  Create your free account and unlock access to thousands of amazing products with exclusive member benefits.
+                <Text
+                  fontSize={{ base: "md", lg: "lg" }}
+                  color="gray.600"
+                  maxW="500px"
+                >
+                  Create your free account and unlock access to thousands of
+                  amazing products with exclusive member benefits.
                 </Text>
               </Box>
 
@@ -247,7 +281,13 @@ function Register() {
 
               {/* Stats */}
               <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-                <Box textAlign="center" p={4} bg="white" borderRadius="xl" boxShadow="sm">
+                <Box
+                  textAlign="center"
+                  p={4}
+                  bg="white"
+                  borderRadius="xl"
+                  boxShadow="sm"
+                >
                   <Text fontSize="2xl" fontWeight="bold" color="purple.600">
                     50K+
                   </Text>
@@ -255,7 +295,13 @@ function Register() {
                     Members
                   </Text>
                 </Box>
-                <Box textAlign="center" p={4} bg="white" borderRadius="xl" boxShadow="sm">
+                <Box
+                  textAlign="center"
+                  p={4}
+                  bg="white"
+                  borderRadius="xl"
+                  boxShadow="sm"
+                >
                   <Text fontSize="2xl" fontWeight="bold" color="blue.600">
                     100K+
                   </Text>
@@ -263,7 +309,13 @@ function Register() {
                     Products
                   </Text>
                 </Box>
-                <Box textAlign="center" p={4} bg="white" borderRadius="xl" boxShadow="sm">
+                <Box
+                  textAlign="center"
+                  p={4}
+                  bg="white"
+                  borderRadius="xl"
+                  boxShadow="sm"
+                >
                   <Text fontSize="2xl" fontWeight="bold" color="green.600">
                     4.9★
                   </Text>
@@ -329,7 +381,13 @@ function Register() {
                         Full Name
                       </Field.Label>
                       <Box position="relative">
-                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                        <Box
+                          position="absolute"
+                          left="12px"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          zIndex="1"
+                        >
                           <User size={18} color="#9CA3AF" />
                         </Box>
                         <Input
@@ -357,7 +415,13 @@ function Register() {
                         Email Address
                       </Field.Label>
                       <Box position="relative">
-                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                        <Box
+                          position="absolute"
+                          left="12px"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          zIndex="1"
+                        >
                           <Mail size={18} color="#9CA3AF" />
                         </Box>
                         <Input
@@ -385,7 +449,13 @@ function Register() {
                         Password
                       </Field.Label>
                       <Box position="relative">
-                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                        <Box
+                          position="absolute"
+                          left="12px"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          zIndex="1"
+                        >
                           <Lock size={18} color="#9CA3AF" />
                         </Box>
                         <Input
@@ -447,7 +517,13 @@ function Register() {
                         Profile Photo URL (Optional)
                       </Field.Label>
                       <Box position="relative">
-                        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex="1">
+                        <Box
+                          position="absolute"
+                          left="12px"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          zIndex="1"
+                        >
                           <ImageIcon size={18} color="#9CA3AF" />
                         </Box>
                         <Input
@@ -525,13 +601,28 @@ function Register() {
                     </Link>
 
                     {/* Terms */}
-                    <Text fontSize="xs" color="gray.500" textAlign="center" px={4}>
+                    <Text
+                      fontSize="xs"
+                      color="gray.500"
+                      textAlign="center"
+                      px={4}
+                    >
                       By creating an account, you agree to our{" "}
-                      <Text as="span" color="purple.600" fontWeight="medium" cursor="pointer">
+                      <Text
+                        as="span"
+                        color="purple.600"
+                        fontWeight="medium"
+                        cursor="pointer"
+                      >
                         Terms of Service
                       </Text>{" "}
                       and{" "}
-                      <Text as="span" color="purple.600" fontWeight="medium" cursor="pointer">
+                      <Text
+                        as="span"
+                        color="purple.600"
+                        fontWeight="medium"
+                        cursor="pointer"
+                      >
                         Privacy Policy
                       </Text>
                     </Text>

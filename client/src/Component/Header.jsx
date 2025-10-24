@@ -29,7 +29,6 @@ import { Action_Type as cart } from "../Redux/Cart_Reducer/action.jsx";
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { IsAuth, user } = useSelector((state) => state.auth);
-   console.log("Header",user);
   const isAdmin = user?.role === "admin";
   const nav = useNavigate();
   const { items } = useSelector((state) => state.cart);

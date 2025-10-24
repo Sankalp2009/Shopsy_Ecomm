@@ -28,11 +28,8 @@ import {
 // import { toaster } from "../../components/ui/toaster.jsx";
 
 function Profile() {
-  
   const { user } = useSelector((state) => state.auth);
-  
-  console.log("profile",user);
-  
+
   const navigate = useNavigate();
 
   if (!user) return null;

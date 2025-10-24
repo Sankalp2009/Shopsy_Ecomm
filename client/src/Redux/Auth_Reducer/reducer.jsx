@@ -6,7 +6,7 @@ const InitialState = {
 };
 
 export const reducer = (currentState = InitialState, action) => {
-  const { type,  payload } = action;
+  const { type, payload } = action;
   switch (type) {
     case "SIGNUP_REQUEST":
       return {
@@ -24,8 +24,8 @@ export const reducer = (currentState = InitialState, action) => {
     case "SIGNUP_FAILURE":
       return {
         ...currentState,
-        IsAuth:false,
-        IsLoading:false,
+        IsAuth: false,
+        IsLoading: false,
       };
     case "LOGIN_REQUEST":
       return {
@@ -34,7 +34,7 @@ export const reducer = (currentState = InitialState, action) => {
       };
     case "LOGIN_SUCCESS":
       return {
-         ...currentState,
+        ...currentState,
         access_token: payload.token,
         user: payload.user,
         IsAuth: true,
@@ -43,8 +43,8 @@ export const reducer = (currentState = InitialState, action) => {
     case "LOGIN_FAILURE":
       return {
         ...currentState,
-        IsAuth:false,
-        IsLoading:false,
+        IsAuth: false,
+        IsLoading: false,
       };
     case "LOGOUT":
       localStorage.removeItem("reduxState");

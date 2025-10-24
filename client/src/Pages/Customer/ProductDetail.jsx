@@ -66,8 +66,6 @@ function ProductDetail() {
         }
       );
 
-      console.log("res", response?.data);
-
       dispatch({
         type: Product.GET_SUCCESS_BY_ID,
         payload: response?.data?.data,

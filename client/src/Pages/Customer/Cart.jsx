@@ -21,9 +21,9 @@ import CartItem from "../../Component/CartItem.jsx";
 
 function Cart() {
   const navigate = useNavigate();
+ 
   const { items } = useSelector((state) => state.cart);
   
-  console.log(items);
   
   const CartCount = items.length;
 

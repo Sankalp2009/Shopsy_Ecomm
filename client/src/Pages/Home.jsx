@@ -54,7 +54,6 @@ function Home() {
   ];
   
   const { IsAuth } = useSelector(state => state.auth);
-  console.log(IsAuth);
 
   return (
     <Box minH="100vh" bg="linear-gradient(to bottom, #f8fafc, #e2e8f0)" overflow="hidden">

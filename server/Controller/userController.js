@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({path:"./config.env"});
 
 const SUPER_ADMIN = {
   email: process.env.SUPER_ADMIN_EMAIL,
@@ -27,15 +27,17 @@ export const Register = async (req, res) => {
     }
 
     // 2️⃣ Prevent admin email registration
-    if (email.toLowerCase() === SUPER_ADMIN.email.toLowerCase()) {
+    if (email.toLowerCase() === SUPER_ADMIN?.email.toLowerCase()) {
       return res.status(400).json({
         status: "fail",
         message: "This email is reserved. Please use a different email.",
       });
     }
+    
+    const normalizedEmail = email.trim().toLowerCase();
 
     // 3️⃣ Check existing user (use `.lean()` for faster read)
-    const existing = await User.findOne({ email: email.toLowerCase() }).lean();
+    const existing = await User.findOne({ email: normalizedEmail }).lean();
     if (existing) {
       return res.status(400).json({
         status: "fail",
@@ -47,7 +49,7 @@ export const Register = async (req, res) => {
     const newUser = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      password: hashedPassword,
+      password,
       photo: photo || "",
       role: "user",
     });

@@ -15,7 +15,7 @@
 
 ## Overview
 
-ShopNexus is a full-featured e-commerce REST API built with Node.js, Express, and MongoDB. It provides comprehensive functionality for user authentication, product management, and role-based access control.
+Shopsy is a full-featured e-commerce REST API built with Node.js, Express, and MongoDB. It provides comprehensive functionality for user authentication, product management, and role-based access control.
 
 **Technology Stack:**
 - **Runtime:** Node.js

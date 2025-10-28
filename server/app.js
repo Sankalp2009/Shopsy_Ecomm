@@ -61,12 +61,12 @@ app.get('/health', (req, res) => {
 
 // ✅ API routes
 app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/products', ProductRouter);
+app.use('/api/v1/Products', ProductRouter);
 
 // ✅ Root route
 app.get('/', (req, res) => {
   res.json({
-    message: 'ShopNexus API Server',
+    message: 'Shopsy API Server',
     version: '1.0.0',
     status: 'running',
   });

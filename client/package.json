@@ -1,10 +1,9 @@
 {
-  "name": "crud_redux",
+  "name": "shopsy",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "json-server db.json --port 8080",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -13,6 +12,7 @@
   "dependencies": {
     "@chakra-ui/react": "^3.27.1",
     "@emotion/react": "^11.14.0",
+    "@vercel/speed-insights": "^1.2.0",
     "axios": "^1.12.2",
     "lucide-react": "^0.545.0",
     "next-themes": "^0.4.6",

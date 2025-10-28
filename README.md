@@ -809,17 +809,16 @@ DATABASE_URI=mongodb+srv://...
 # JWT
 JWT_SECRET_KEY=your-secret-key-here
 
-# Super Admin (for seeding)
-SUPER_ADMIN_EMAIL=admin@example.com
-SUPER_ADMIN_PASSWORD=secureAdminPassword
+# Super Admin (for seeding) | Admin Access
+SUPER_ADMIN_EMAIL=admin@shopsy.com
+SUPER_ADMIN_PASSWORD=admin123
 SUPER_ADMIN_NAME=Super Admin
 
 # Environment
 NODE_ENV=production
 ```
 
----
-
+```
 ## Setup and Deployment
 
 ### Installation
@@ -885,3 +884,13 @@ For issues, questions, or feature requests:
 - Review this documentation thoroughly
 
 **API Version:** 1.0.0  
+
+```
+Maintainer: Sankalp Patel
+
+Project Repo: Shopsy E-commerce API
+
+Deployed API: shopsy-ecomm.onrender.com
+
+© 2025 Shopsy API — Built with ❤️ using Node.js, Express & MongoDB
+```

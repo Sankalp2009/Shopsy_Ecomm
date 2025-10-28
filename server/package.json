@@ -1,33 +1,43 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "create an full-edged ecom api",
-  "license": "ISC",
-  "author": "sankalp",
-  "type": "module",
-  "main": "app.js",
-  "scripts": {
-    "dev":"node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
-    "seed": "node seed.js"
-  },
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.1.0",
-    "helmet": "^8.1.0",
-    "hpp": "^0.2.3",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.1",
-    "morgan": "^1.10.1",
-    "nodemon": "^3.1.10",
-    "razorpay": "^2.9.6",
-    "stripe": "^19.1.0",
-    "xss": "^1.0.15"
-  }
+     "name": "server",
+     "version": "1.0.0",
+     "description": "create an full-edged ecom api",
+     "license": "ISC",
+     "author": "sankalp",
+     "type": "module",
+     "main": "app.js",
+     "scripts": {
+          "dev": "node server.js",
+          "test": "echo \"Error: no test specified\" && exit 1",
+          "start": "nodemon server.js",
+          "seed": "node seed.js",
+          "test:keploy": "jest --coverage --coverageReporters=text --coverageReporters=cobertura --collectCoverageFrom='./**/*.{js,jsx,ts,tsx}'"
+     },
+     "dependencies": {
+          "bcrypt": "^6.0.0",
+          "bcryptjs": "^3.0.2",
+          "compression": "^1.8.1",
+          "cookie-parser": "^1.4.7",
+          "cors": "^2.8.5",
+          "dotenv": "^17.2.3",
+          "express": "^5.1.0",
+          "express-rate-limit": "^8.1.0",
+          "helmet": "^8.1.0",
+          "hpp": "^0.2.3",
+          "jsonwebtoken": "^9.0.2",
+          "mongoose": "^8.19.1",
+          "morgan": "^1.10.1",
+          "nodemon": "^3.1.10",
+          "razorpay": "^2.9.6",
+          "stripe": "^19.1.0",
+          "xss": "^1.0.15"
+     },
+     "devDependencies": {
+          "@babel/core": "^7.28.5",
+          "@babel/preset-env": "^7.28.5",
+          "@jest/globals": "^29.7.0",
+          "babel-jest": "^29.7.0",
+          "jest": "^29.7.0",
+          "node-mocks-http": "^1.17.2"
+     }
 }

@@ -1,87 +1,91 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from "helmet";
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
 import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
-import { generalLimiter } from './Utils/rateLimiter.js'
-import userRoutes from "./Routes/userRoutes.js"
-import ProductRouter from './Routes/productRoutes.js'
+import compression from 'compression';
+import { generalLimiter } from './Utils/rateLimiter.js';
+import userRoutes from './Routes/userRoutes.js';
+import ProductRouter from './Routes/productRoutes.js';
 
-// Create Express server
 const app = express();
 
-app.set("trust proxy", 1); // ✅ Required for correct IP detection
+// Trust proxy for Render (for correct IP detection)
+app.set('trust proxy', 1);
 
-// FIXED: Proper CORS configuration without trailing slash
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? "https://shopsy-ecomm-eight.vercel.app"  // No trailing slash, no array
-    : "http://localhost:5173", // for local development
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  credentials: true,
-  optionsSuccessStatus: 200
-}));
-
-
-// Middleware Usage
-// set secure HTTP response header
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
-
-// Body-parser, parse data coming from req.body
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Cookie parser middleware
-app.use(cookieParser());
-
-// Creating limit request per timed
-app.use(generalLimiter);
-
-// prevent Parameter Pollution
-app.use(hpp());
-
-// Cache control for static responses
+// 🕐 Response-time Logger — place early
 app.use((req, res, next) => {
-  if (req.method === 'GET') {
-    res.set('Cache-Control', 'public, max-age=300'); // 5 minutes cache
-  }
+  const start = Date.now();
+  res.on('finish', () => {
+    const time = Date.now() - start;
+    console.log(`[${req.method}] ${req.originalUrl} - ${time}ms`);
+  });
   next();
 });
 
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
-});
+// ✅ Compression (major performance boost)
+app.use(compression());
 
-// API Routes
-app.use('/api/v1', userRoutes);
-app.use('/api/v1/Products', ProductRouter); 
+// ✅ Optimized CORS
+app.use(cors({
+  origin:
+    process.env.NODE_ENV === 'production'
+      ? 'https://shopsy-ecomm-eight.vercel.app'
+      : 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+  optionsSuccessStatus: 200,
+}));
 
-// Root endpoint
-app.get("/", (req, res) => {
-  res.json({ 
-    message: "ShopNexus API Server", 
-    version: "1.0.0",
-    status: "running" 
+// ✅ Parsing middleware
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
+
+// ✅ Security & clean parameters
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
+app.use(hpp());
+
+// ✅ Rate limiter (only for user-related routes)
+app.use('/api/v1/users', generalLimiter);
+
+// ✅ Health check — no rate limit here
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
   });
 });
 
-// 404 handler
+// ✅ API routes
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/products', ProductRouter);
+
+// ✅ Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'ShopNexus API Server',
+    version: '1.0.0',
+    status: 'running',
+  });
+});
+
+// ✅ 404 handler
 app.use((req, res) => {
   res.status(404).json({
-    status: "fail",
-    message: "Route not found"
+    status: 'fail',
+    message: 'Route not found',
   });
 });
 
-// Global error handler
+// ✅ Global error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(err.statusCode || 500).json({
-    status: "error",
-    message: err.message || "Internal server error"
+    status: 'error',
+    message: err.message || 'Internal server error',
   });
 });
 

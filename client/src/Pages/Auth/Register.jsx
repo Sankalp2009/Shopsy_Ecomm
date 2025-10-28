@@ -36,7 +36,7 @@ const InitialState = {
 };
 
 // ✅ FIXED: Remove trailing slash from API URL
-const API_BASE_URL = "https://shopsy-ecomm.onrender.com/api/v1";
+const API_BASE_URL = "https://shopsy-ecomm.onrender.com/api/v1/users";
 
 function Register() {
   const [IsInput, setIsInput] = useState(InitialState);

@@ -79,7 +79,7 @@ Tokens are also stored in HTTP-only cookies (`jwt` cookie) for additional securi
 
 Create a new user account.
 
-**Endpoint:** `POST /api/v1/register`
+**Endpoint:** `POST /api/v1/users/register`
 
 **Request Body:**
 ```json
@@ -141,7 +141,7 @@ Create a new user account.
 
 Authenticate and receive a JWT token.
 
-**Endpoint:** `POST /api/v1/login`
+**Endpoint:** `POST /api/v1/users/login`
 
 **Rate Limited:** 5 attempts per 10 minutes
 
@@ -195,7 +195,7 @@ Authenticate and receive a JWT token.
 
 Generate a new token using an existing valid token.
 
-**Endpoint:** `POST /api/v1/refreshToken`
+**Endpoint:** `POST /api/v1/users/refreshToken`
 
 **Headers:**
 ```

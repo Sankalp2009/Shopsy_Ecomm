@@ -140,8 +140,7 @@ export const refreshToken = async (req, res) => {
 
     // Get token from header or cookie
     if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
+      req.headers.authorization && req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
     } else if (req.cookies.jwt) {

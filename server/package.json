@@ -10,8 +10,7 @@
           "dev": "node server.js",
           "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
           "start": "nodemon server.js",
-          "seed": "node seed.js",
-          "test:keploy": "jest --coverage --coverageReporters=text --coverageReporters=cobertura --collectCoverageFrom='./**/*.{js,jsx,ts,tsx}'"
+          "seed": "node seed.js"
      },
      "dependencies": {
           "bcrypt": "^6.0.0",

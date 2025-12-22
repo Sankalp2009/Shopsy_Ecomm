@@ -1,44 +1,64 @@
-import React, { useState } from "react";
 import {
+  Avatar,
+  Badge,
   Box,
   Button,
-  Heading,
-  Text,
   Flex,
-  Avatar,
+  Heading,
+  IconButton,
   Menu,
   Portal,
-  IconButton,
-  Drawer,
+  Text,
   VStack,
-  Badge,
 } from "@chakra-ui/react";
 import {
-  ShoppingCart,
+  ChevronDown,
+  Grid3X3,
+  Home,
   LogOut,
   Menu as MenuIcon,
-  X,
-  User,
   Package,
+  Settings,
+  ShoppingCart,
+  Sparkles,
+  User,
+  X,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Action_Type } from "../Redux/Auth_Reducer/action.jsx";
 import { Action_Type as cart } from "../Redux/Cart_Reducer/action.jsx";
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { IsAuth, user } = useSelector((state) => state.auth);
   const isAdmin = user?.role === "admin";
   const nav = useNavigate();
+  const location = useLocation();
   const { items } = useSelector((state) => state.cart);
   const CartCount = items?.length || 0;
   const dispatch = useDispatch();
 
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const Links = [
-    { path: "/", content: "Home" },
-    { path: "/product", content: "Products" },
+    { path: "/", content: "Home", icon: Home },
+    { path: "/product", content: "Products", icon: Grid3X3 },
   ];
+
+  const isActiveLink = (path) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
 
   const handleLogout = () => {
     dispatch({ type: cart.CLEAR_CART });
@@ -53,10 +73,14 @@ function Header() {
       position="sticky"
       top="0"
       zIndex="1000"
-      bg="white"
-      boxShadow="0 2px 8px rgba(0,0,0,0.08)"
-      backdropFilter="blur(10px)"
-      transition="all 0.3s ease"
+      bg={
+        isScrolled ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.95)"
+      }
+      backdropFilter="blur(20px) saturate(180%)"
+      borderBottom="1px solid"
+      borderColor={isScrolled ? "gray.200" : "transparent"}
+      boxShadow={isScrolled ? "0 4px 30px rgba(0, 0, 0, 0.08)" : "none"}
+      transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
     >
       <Box maxW="1400px" mx="auto" px={{ base: "4", md: "6", lg: "8" }}>
         <Flex
@@ -66,36 +90,166 @@ function Header() {
         >
           {/* Logo */}
           <Link to="/" style={{ textDecoration: "none" }}>
-            <Flex alignItems="center" gap="2">
-              <Box
-                bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                p="2"
-                borderRadius="lg"
-                boxShadow="0 4px 12px rgba(102, 126, 234, 0.3)"
-              >
-                <ShoppingCart color="white" size={24} />
+            <Flex
+              alignItems="center"
+              gap="3"
+              _hover={{ transform: "scale(1.02)" }}
+              transition="transform 0.3s ease"
+              role="group"
+            >
+              {/* Custom Logo Icon */}
+              <Box position="relative">
+                {/* Glow Effect */}
+                <Box
+                  position="absolute"
+                  inset="-4px"
+                  bg="linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%)"
+                  borderRadius="2xl"
+                  opacity="0.4"
+                  filter="blur(12px)"
+                  transition="opacity 0.3s ease"
+                  _groupHover={{ opacity: 0.6 }}
+                />
+
+                {/* Icon Container */}
+                <Box
+                  position="relative"
+                  bg="linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%)"
+                  p="3"
+                  borderRadius="xl"
+                  boxShadow="0 8px 24px rgba(15, 23, 42, 0.5), inset 0 1px 1px rgba(255,255,255,0.1)"
+                  border="1px solid rgba(250, 204, 21, 0.3)"
+                  overflow="hidden"
+                  _before={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: "-100%",
+                    width: "100%",
+                    height: "100%",
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.2), transparent)",
+                    transition: "left 0.6s ease",
+                  }}
+                  _groupHover={{
+                    _before: { left: "100%" },
+                  }}
+                >
+                  {/* Custom SVG Logo */}
+                  <svg
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* Shopping Bag Body */}
+                    <path
+                      d="M3.5 8C3.5 7.44772 3.94772 7 4.5 7H19.5C20.0523 7 20.5 7.44772 20.5 8V19C20.5 20.1046 19.6046 21 18.5 21H5.5C4.39543 21 3.5 20.1046 3.5 19V8Z"
+                      fill="#facc15"
+                    />
+                    {/* Bag Handles */}
+                    <path
+                      d="M8 7V5C8 3.34315 9.34315 2 11 2H13C14.6569 2 16 3.34315 16 5V7"
+                      stroke="#facc15"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    />
+                    {/* Sparkle/Star Element */}
+                    <path
+                      d="M12 10L12.7 12.3L15 13L12.7 13.7L12 16L11.3 13.7L9 13L11.3 12.3L12 10Z"
+                      fill="#0f172a"
+                    />
+                  </svg>
+                </Box>
+
+                {/* Floating Premium Badge */}
+                <Box
+                  position="absolute"
+                  top="-3px"
+                  right="-3px"
+                  w="14px"
+                  h="14px"
+                  bg="linear-gradient(135deg, #facc15 0%, #eab308 100%)"
+                  borderRadius="full"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  boxShadow="0 2px 8px rgba(250, 204, 21, 0.5)"
+                  border="2px solid #0f172a"
+                  animation="pulse 2s ease-in-out infinite"
+                >
+                  <Sparkles size={7} color="#0f172a" strokeWidth={3} />
+                </Box>
               </Box>
-              <Heading
-                size={{ base: "lg", md: "xl" }}
-                bgGradient="to-r"
-                gradientFrom="purple.600"
-                gradientTo="blue.500"
-                bgClip="text"
-                fontWeight="800"
-                letterSpacing="tight"
-              >
-                shopsy
-              </Heading>
+
+              {/* Logo Text */}
+              <Box>
+                <Flex alignItems="baseline" gap="0">
+                  <Heading
+                    size={{ base: "md", md: "lg" }}
+                    bgGradient="to-r"
+                    gradientFrom="#facc15"
+                    gradientTo="#eab308"
+                    bgClip="text"
+                    fontWeight="900"
+                    letterSpacing="-0.03em"
+                    lineHeight="1"
+                  >
+                    Shop
+                  </Heading>
+                  <Heading
+                    size={{ base: "md", md: "lg" }}
+                    color="#0f172a"
+                    fontWeight="900"
+                    letterSpacing="-0.03em"
+                    lineHeight="1"
+                  >
+                    sy
+                  </Heading>
+                </Flex>
+                <Flex
+                  alignItems="center"
+                  gap="1.5"
+                  mt="1"
+                  display={{ base: "none", md: "flex" }}
+                >
+                  <Box
+                    w="12px"
+                    h="2px"
+                    bg="linear-gradient(90deg, #facc15, #1e3a5f)"
+                    borderRadius="full"
+                  />
+                  <Text
+                    fontSize="9px"
+                    color="#1e3a5f"
+                    fontWeight="700"
+                    letterSpacing="0.15em"
+                    textTransform="uppercase"
+                  >
+                    Premium Store
+                  </Text>
+                  <Box
+                    w="12px"
+                    h="2px"
+                    bg="linear-gradient(90deg, #1e3a5f, #facc15)"
+                    borderRadius="full"
+                  />
+                </Flex>
+              </Box>
             </Flex>
           </Link>
 
           {/* Desktop Navigation */}
           <Flex
-            display={{ base: "none", md: "flex" }}
-            gap="8"
+            display={{ base: "none", lg: "flex" }}
+            gap="1"
             alignItems="center"
-            fontSize="md"
-            fontWeight="500"
+            bg="gray.50"
+            p="1.5"
+            borderRadius="full"
+            border="1px solid"
+            borderColor="gray.100"
           >
             {Links.map((el) => (
               <Link
@@ -103,95 +257,156 @@ function Header() {
                 to={el.path}
                 style={{ textDecoration: "none" }}
               >
-                <Text
-                  color="gray.700"
+                <Flex
+                  alignItems="center"
+                  gap="2"
+                  px="5"
+                  py="2.5"
+                  borderRadius="full"
+                  bg={isActiveLink(el.path) ? "white" : "transparent"}
+                  boxShadow={
+                    isActiveLink(el.path)
+                      ? "0 2px 8px rgba(0,0,0,0.08)"
+                      : "none"
+                  }
+                  color={isActiveLink(el.path) ? "purple.600" : "gray.600"}
+                  fontWeight="600"
+                  fontSize="sm"
+                  transition="all 0.25s ease"
                   _hover={{
+                    bg: isActiveLink(el.path) ? "white" : "gray.100",
                     color: "purple.600",
-                    transform: "translateY(-2px)",
                   }}
-                  transition="all 0.2s"
-                  cursor="pointer"
                 >
-                  {el.content}
-                </Text>
+                  <el.icon size={16} strokeWidth={2.5} />
+                  <Text>{el.content}</Text>
+                </Flex>
               </Link>
             ))}
             {isAdmin && (
               <Link to="/admin" style={{ textDecoration: "none" }}>
-                <Text
-                  color="gray.700"
+                <Flex
+                  alignItems="center"
+                  gap="2"
+                  px="5"
+                  py="2.5"
+                  borderRadius="full"
+                  bg={isActiveLink("/admin") ? "white" : "transparent"}
+                  boxShadow={
+                    isActiveLink("/admin")
+                      ? "0 2px 8px rgba(0,0,0,0.08)"
+                      : "none"
+                  }
+                  color={isActiveLink("/admin") ? "purple.600" : "gray.600"}
+                  fontWeight="600"
+                  fontSize="sm"
+                  transition="all 0.25s ease"
                   _hover={{
+                    bg: isActiveLink("/admin") ? "white" : "gray.100",
                     color: "purple.600",
-                    transform: "translateY(-2px)",
                   }}
-                  transition="all 0.2s"
-                  cursor="pointer"
                 >
-                  Admin
-                </Text>
+                  <Settings size={16} strokeWidth={2.5} />
+                  <Text>Admin</Text>
+                </Flex>
               </Link>
             )}
           </Flex>
 
           {/* Desktop Auth Actions */}
           <Flex
-            display={{ base: "none", md: "flex" }}
+            display={{ base: "none", lg: "flex" }}
             alignItems="center"
-            gap="4"
+            gap="3"
           >
             {!IsAuth ? (
               <>
                 <Link to="/signin">
                   <Button
                     variant="ghost"
-                    colorPalette="purple"
+                    color="gray.700"
                     size="md"
                     fontWeight="600"
+                    borderRadius="full"
+                    px="6"
+                    _hover={{
+                      bg: "gray.100",
+                      color: "purple.600",
+                    }}
+                    transition="all 0.25s ease"
                   >
-                    Login
+                    Sign In
                   </Button>
                 </Link>
                 <Link to="/signup">
                   <Button
-                    bgGradient="to-r"
-                    gradientFrom="purple.500"
-                    gradientTo="blue.500"
+                    position="relative"
+                    overflow="hidden"
+                    bg="linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)"
                     color="white"
                     size="md"
                     fontWeight="600"
+                    borderRadius="full"
+                    px="6"
+                    boxShadow="0 4px 15px rgba(99, 102, 241, 0.4)"
                     _hover={{
                       transform: "translateY(-2px)",
-                      boxShadow: "lg",
+                      boxShadow: "0 8px 25px rgba(99, 102, 241, 0.5)",
                     }}
-                    transition="all 0.2s"
+                    _active={{
+                      transform: "translateY(0)",
+                    }}
+                    transition="all 0.3s ease"
+                    _before={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: "-100%",
+                      width: "100%",
+                      height: "100%",
+                      background:
+                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                      transition: "left 0.5s ease",
+                    }}
+                    _hover_before={{
+                      left: "100%",
+                    }}
                   >
-                    Register
+                    <Flex align="center" gap="2">
+                      <Sparkles size={16} />
+                      Get Started
+                    </Flex>
                   </Button>
                 </Link>
-                <Box position="relative">
-                  <ShoppingCart size={24} color="#6B7280" />
-                </Box>
               </>
             ) : (
               <>
                 {/* Cart Icon with Badge */}
                 <Link to="/cart">
-                  <Box position="relative" cursor="pointer">
-                    <IconButton
-                      variant="ghost"
-                      colorPalette="gray"
-                      size="lg"
-                      _hover={{ bg: "gray.100" }}
-                    >
-                      <ShoppingCart size={22} />
-                    </IconButton>
+                  <Box
+                    position="relative"
+                    cursor="pointer"
+                    p="2.5"
+                    borderRadius="xl"
+                    bg="gray.50"
+                    border="1px solid"
+                    borderColor="gray.100"
+                    transition="all 0.25s ease"
+                    _hover={{
+                      bg: "purple.50",
+                      borderColor: "purple.200",
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 4px 12px rgba(139, 92, 246, 0.15)",
+                    }}
+                  >
+                    <ShoppingCart size={20} strokeWidth={2} color="#6366f1" />
                     {CartCount > 0 && (
                       <Badge
                         position="absolute"
-                        top="-1"
-                        right="-1"
-                        colorPalette="red"
-                        variant="solid"
+                        top="-2"
+                        right="-2"
+                        bg="linear-gradient(135deg, #ef4444 0%, #f97316 100%)"
+                        color="white"
                         borderRadius="full"
                         fontSize="xs"
                         minW="20px"
@@ -199,98 +414,234 @@ function Header() {
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
-                        fontWeight="bold"
+                        fontWeight="700"
+                        boxShadow="0 2px 8px rgba(239, 68, 68, 0.4)"
+                        border="2px solid white"
                       >
-                        {CartCount}
+                        {CartCount > 9 ? "9+" : CartCount}
                       </Badge>
                     )}
                   </Box>
                 </Link>
 
+                {/* Divider */}
+                <Box w="1px" h="8" bg="gray.200" mx="1" />
+
                 {/* User Menu */}
                 <Menu.Root positioning={{ placement: "bottom-end" }}>
                   <Menu.Trigger>
-                    <Avatar.Root
-                      size="sm"
+                    <Flex
+                      alignItems="center"
+                      gap="3"
                       cursor="pointer"
-                      borderWidth="2px"
-                      borderColor="purple.500"
+                      p="2"
+                      pr="3"
+                      borderRadius="full"
+                      bg="gray.50"
+                      border="1px solid"
+                      borderColor="gray.100"
+                      transition="all 0.25s ease"
                       _hover={{
-                        transform: "scale(1.05)",
-                        boxShadow: "0 0 0 3px rgba(139, 92, 246, 0.1)",
+                        bg: "purple.50",
+                        borderColor: "purple.200",
+                        boxShadow: "0 4px 12px rgba(139, 92, 246, 0.1)",
                       }}
-                      transition="all 0.2s"
                     >
-                      <Avatar.Fallback>
-                        {user?.name?.charAt(0) || "u"}
-                      </Avatar.Fallback>
-                      <Avatar.Image src={user?.photo} />
-                    </Avatar.Root>
+                      <Avatar.Root
+                        size="sm"
+                        borderWidth="2px"
+                        borderColor="purple.400"
+                        boxShadow="0 0 0 2px rgba(139, 92, 246, 0.2)"
+                      >
+                        <Avatar.Fallback
+                          bg="linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
+                          color="white"
+                          fontWeight="700"
+                        >
+                          {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                        </Avatar.Fallback>
+                        <Avatar.Image src={user?.photo} />
+                      </Avatar.Root>
+                      <Box display={{ base: "none", xl: "block" }}>
+                        <Text
+                          fontSize="sm"
+                          fontWeight="600"
+                          color="gray.800"
+                          lineHeight="1.2"
+                        >
+                          {user?.name?.split(" ")[0] || "User"}
+                        </Text>
+                        <Text
+                          fontSize="xs"
+                          color="gray.500"
+                          textTransform="capitalize"
+                        >
+                          {user?.role || "Member"}
+                        </Text>
+                      </Box>
+                      <ChevronDown size={16} color="#9ca3af" />
+                    </Flex>
                   </Menu.Trigger>
                   <Portal>
                     <Menu.Positioner>
                       <Menu.Content
-                        minW="220px"
-                        borderRadius="xl"
-                        boxShadow="xl"
+                        minW="240px"
+                        p="2"
+                        borderRadius="2xl"
+                        boxShadow="0 20px 50px rgba(0, 0, 0, 0.15)"
                         border="1px solid"
                         borderColor="gray.100"
+                        bg="white"
+                        overflow="hidden"
                       >
+                        {/* User Info Header */}
                         <Box
                           p="4"
-                          borderBottom="1px solid"
-                          borderColor="gray.100"
+                          mb="2"
+                          borderRadius="xl"
+                          bg="linear-gradient(135deg, #f0f0ff 0%, #faf5ff 100%)"
+                          border="1px solid"
+                          borderColor="purple.100"
                         >
-                          <Text fontWeight="600" fontSize="md" color="gray.800">
-                            {user?.name}
-                          </Text>
-                          <Text
-                            fontSize="sm"
-                            color="gray.500"
-                            textTransform="capitalize"
-                          >
-                            {user?.role}
-                          </Text>
-                        </Box>
-                        <Menu.Item value="profile" _hover={{ bg: "purple.50" }}>
-                          <Link
-                            to="/me"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              width: "100%",
-                            }}
-                          >
-                            <User size={16} />
-                            <span>Profile</span>
-                          </Link>
-                        </Menu.Item>
-                        <Menu.Item value="orders" _hover={{ bg: "purple.50" }}>
-                          <Link
-                            to="/order"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              width: "100%",
-                            }}
-                          >
-                            <Package size={16} />
-                            <span>Orders</span>
-                          </Link>
-                        </Menu.Item>
-                        <Menu.Item
-                          value="logout"
-                          color="red.600"
-                          _hover={{ bg: "red.50" }}
-                          onClick={handleLogout}
-                        >
-                          <Flex align="center" gap="2">
-                            <LogOut size={16} />
-                            <span>Logout</span>
+                          <Flex align="center" gap="3">
+                            <Avatar.Root
+                              size="md"
+                              borderWidth="2px"
+                              borderColor="purple.400"
+                            >
+                              <Avatar.Fallback
+                                bg="linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
+                                color="white"
+                                fontWeight="700"
+                                fontSize="md"
+                              >
+                                {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                              </Avatar.Fallback>
+                              <Avatar.Image src={user?.photo} />
+                            </Avatar.Root>
+                            <Box flex="1" overflow="hidden">
+                              <Text
+                                fontWeight="700"
+                                fontSize="md"
+                                color="gray.800"
+                                truncate
+                              >
+                                {user?.name || "User"}
+                              </Text>
+                              <Text
+                                fontSize="sm"
+                                color="purple.600"
+                                textTransform="capitalize"
+                                fontWeight="500"
+                              >
+                                {user?.role || "Member"}
+                              </Text>
+                            </Box>
                           </Flex>
-                        </Menu.Item>
+                        </Box>
+
+                        {/* Menu Items */}
+                        <VStack align="stretch" gap="1">
+                          <Link to="/me" style={{ textDecoration: "none" }}>
+                            <Menu.Item
+                              value="profile"
+                              p="3"
+                              borderRadius="xl"
+                              transition="all 0.2s ease"
+                              _hover={{ bg: "gray.50" }}
+                            >
+                              <Flex align="center" gap="3">
+                                <Box
+                                  p="2"
+                                  borderRadius="lg"
+                                  bg="blue.50"
+                                  color="blue.600"
+                                >
+                                  <User size={16} strokeWidth={2.5} />
+                                </Box>
+                                <Box>
+                                  <Text
+                                    fontWeight="600"
+                                    fontSize="sm"
+                                    color="gray.800"
+                                  >
+                                    My Profile
+                                  </Text>
+                                  <Text fontSize="xs" color="gray.500">
+                                    View and edit profile
+                                  </Text>
+                                </Box>
+                              </Flex>
+                            </Menu.Item>
+                          </Link>
+
+                          <Link to="/order" style={{ textDecoration: "none" }}>
+                            <Menu.Item
+                              value="orders"
+                              p="3"
+                              borderRadius="xl"
+                              transition="all 0.2s ease"
+                              _hover={{ bg: "gray.50" }}
+                            >
+                              <Flex align="center" gap="3">
+                                <Box
+                                  p="2"
+                                  borderRadius="lg"
+                                  bg="green.50"
+                                  color="green.600"
+                                >
+                                  <Package size={16} strokeWidth={2.5} />
+                                </Box>
+                                <Box>
+                                  <Text
+                                    fontWeight="600"
+                                    fontSize="sm"
+                                    color="gray.800"
+                                  >
+                                    My Orders
+                                  </Text>
+                                  <Text fontSize="xs" color="gray.500">
+                                    Track your orders
+                                  </Text>
+                                </Box>
+                              </Flex>
+                            </Menu.Item>
+                          </Link>
+
+                          <Box h="1px" bg="gray.100" my="1" />
+
+                          <Menu.Item
+                            value="logout"
+                            p="3"
+                            borderRadius="xl"
+                            transition="all 0.2s ease"
+                            _hover={{ bg: "red.50" }}
+                            onClick={handleLogout}
+                          >
+                            <Flex align="center" gap="3">
+                              <Box
+                                p="2"
+                                borderRadius="lg"
+                                bg="red.50"
+                                color="red.600"
+                              >
+                                <LogOut size={16} strokeWidth={2.5} />
+                              </Box>
+                              <Box>
+                                <Text
+                                  fontWeight="600"
+                                  fontSize="sm"
+                                  color="red.600"
+                                >
+                                  Log Out
+                                </Text>
+                                <Text fontSize="xs" color="gray.500">
+                                  Sign out of account
+                                </Text>
+                              </Box>
+                            </Flex>
+                          </Menu.Item>
+                        </VStack>
                       </Menu.Content>
                     </Menu.Positioner>
                   </Portal>
@@ -301,21 +652,28 @@ function Header() {
 
           {/* Mobile Menu Button & Cart */}
           <Flex
-            display={{ base: "flex", md: "none" }}
+            display={{ base: "flex", lg: "none" }}
             alignItems="center"
-            gap="3"
+            gap="2"
           >
             {IsAuth && (
               <Link to="/cart">
-                <Box position="relative">
-                  <ShoppingCart size={24} />
+                <Box
+                  position="relative"
+                  p="2.5"
+                  borderRadius="xl"
+                  bg="gray.50"
+                  border="1px solid"
+                  borderColor="gray.100"
+                >
+                  <ShoppingCart size={20} color="#6366f1" />
                   {CartCount > 0 && (
                     <Badge
                       position="absolute"
-                      top="-8px"
-                      right="-8px"
-                      colorPalette="red"
-                      variant="solid"
+                      top="-2"
+                      right="-2"
+                      bg="linear-gradient(135deg, #ef4444 0%, #f97316 100%)"
+                      color="white"
                       borderRadius="full"
                       fontSize="xs"
                       minW="18px"
@@ -323,8 +681,10 @@ function Header() {
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
+                      fontWeight="700"
+                      border="2px solid white"
                     >
-                      {CartCount}
+                      {CartCount > 9 ? "9+" : CartCount}
                     </Badge>
                   )}
                 </Box>
@@ -333,154 +693,288 @@ function Header() {
             <IconButton
               variant="ghost"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              colorPalette="gray"
+              p="2.5"
+              borderRadius="xl"
+              bg={isMobileMenuOpen ? "purple.50" : "gray.50"}
+              border="1px solid"
+              borderColor={isMobileMenuOpen ? "purple.200" : "gray.100"}
+              color={isMobileMenuOpen ? "purple.600" : "gray.600"}
+              transition="all 0.25s ease"
+              _hover={{
+                bg: "purple.50",
+                borderColor: "purple.200",
+              }}
             >
-              {isMobileMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
+              {isMobileMenuOpen ? <X size={22} /> : <MenuIcon size={22} />}
             </IconButton>
           </Flex>
         </Flex>
 
         {/* Mobile Menu Dropdown */}
-        {isMobileMenuOpen && (
-          <Box
-            display={{ base: "block", md: "none" }}
-            pb="4"
-            borderTop="1px solid"
-            borderColor="gray.100"
-            animation="slideDown 0.3s ease-out"
-          >
-            <VStack align="stretch" gap="2" mt="4">
-              {Links.map((el) => (
-                <Link
-                  key={el.path}
-                  to={el.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  style={{ textDecoration: "none" }}
+        <Box
+          display={{ base: isMobileMenuOpen ? "block" : "none", lg: "none" }}
+          pb="6"
+          pt="4"
+          borderTop="1px solid"
+          borderColor="gray.100"
+          animation="slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+        >
+          <VStack align="stretch" gap="2">
+            {/* Navigation Links */}
+            {Links.map((el) => (
+              <Link
+                key={el.path}
+                to={el.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                style={{ textDecoration: "none" }}
+              >
+                <Flex
+                  alignItems="center"
+                  gap="3"
+                  p="4"
+                  borderRadius="xl"
+                  bg={isActiveLink(el.path) ? "purple.50" : "gray.50"}
+                  border="1px solid"
+                  borderColor={
+                    isActiveLink(el.path) ? "purple.200" : "gray.100"
+                  }
+                  transition="all 0.2s ease"
+                  _hover={{ bg: "purple.50", borderColor: "purple.200" }}
                 >
                   <Box
-                    p="3"
+                    p="2"
                     borderRadius="lg"
-                    _hover={{ bg: "purple.50" }}
-                    transition="all 0.2s"
+                    bg={isActiveLink(el.path) ? "purple.100" : "white"}
+                    color={isActiveLink(el.path) ? "purple.600" : "gray.600"}
                   >
-                    <Text fontWeight="500" color="gray.700">
-                      {el.content}
-                    </Text>
+                    <el.icon size={18} strokeWidth={2.5} />
                   </Box>
-                </Link>
-              ))}
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Box
-                    p="3"
-                    borderRadius="lg"
-                    _hover={{ bg: "purple.50" }}
-                    transition="all 0.2s"
+                  <Text
+                    fontWeight="600"
+                    color={isActiveLink(el.path) ? "purple.700" : "gray.700"}
                   >
-                    <Text fontWeight="500" color="gray.700">
-                      Admin
-                    </Text>
-                  </Box>
-                </Link>
-              )}
+                    {el.content}
+                  </Text>
+                </Flex>
+              </Link>
+            ))}
 
-              {!IsAuth ? (
-                <>
-                  <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button
-                      w="full"
-                      variant="ghost"
-                      colorPalette="purple"
-                      size="lg"
-                    >
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button
-                      w="full"
-                      bgGradient="to-r"
-                      gradientFrom="purple.500"
-                      gradientTo="blue.500"
-                      color="white"
-                      size="lg"
-                    >
-                      Register
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setIsMobileMenuOpen(false)}
+                style={{ textDecoration: "none" }}
+              >
+                <Flex
+                  alignItems="center"
+                  gap="3"
+                  p="4"
+                  borderRadius="xl"
+                  bg={isActiveLink("/admin") ? "purple.50" : "gray.50"}
+                  border="1px solid"
+                  borderColor={
+                    isActiveLink("/admin") ? "purple.200" : "gray.100"
+                  }
+                  transition="all 0.2s ease"
+                  _hover={{ bg: "purple.50", borderColor: "purple.200" }}
+                >
                   <Box
-                    p="3"
+                    p="2"
                     borderRadius="lg"
-                    bg="purple.50"
-                    borderWidth="1px"
-                    borderColor="purple.200"
+                    bg={isActiveLink("/admin") ? "purple.100" : "white"}
+                    color={isActiveLink("/admin") ? "purple.600" : "gray.600"}
                   >
-                    <Text fontWeight="600" fontSize="sm" color="gray.800">
-                      {user?.name}
-                    </Text>
-                    <Text
-                      fontSize="xs"
-                      color="gray.600"
-                      textTransform="capitalize"
-                    >
-                      {user?.role}
-                    </Text>
+                    <Settings size={18} strokeWidth={2.5} />
                   </Box>
-                  <Link to="/me" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Box
-                      p="3"
-                      borderRadius="lg"
-                      _hover={{ bg: "purple.50" }}
-                      display="flex"
-                      alignItems="center"
-                      gap="2"
+                  <Text
+                    fontWeight="600"
+                    color={isActiveLink("/admin") ? "purple.700" : "gray.700"}
+                  >
+                    Admin Dashboard
+                  </Text>
+                </Flex>
+              </Link>
+            )}
+
+            {/* Divider */}
+            <Box h="1px" bg="gray.200" my="2" />
+
+            {!IsAuth ? (
+              <VStack gap="3" pt="2">
+                <Link
+                  to="/signin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  style={{ width: "100%" }}
+                >
+                  <Button
+                    w="full"
+                    variant="outline"
+                    colorPalette="gray"
+                    size="lg"
+                    borderRadius="xl"
+                    fontWeight="600"
+                    borderWidth="2px"
+                    _hover={{ bg: "gray.50" }}
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  style={{ width: "100%" }}
+                >
+                  <Button
+                    w="full"
+                    bg="linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)"
+                    color="white"
+                    size="lg"
+                    borderRadius="xl"
+                    fontWeight="600"
+                    boxShadow="0 4px 15px rgba(99, 102, 241, 0.3)"
+                    _hover={{
+                      boxShadow: "0 6px 20px rgba(99, 102, 241, 0.4)",
+                    }}
+                  >
+                    <Flex align="center" gap="2">
+                      <Sparkles size={18} />
+                      Get Started Free
+                    </Flex>
+                  </Button>
+                </Link>
+              </VStack>
+            ) : (
+              <>
+                {/* User Info Card */}
+                <Box
+                  p="4"
+                  borderRadius="xl"
+                  bg="linear-gradient(135deg, #f0f0ff 0%, #faf5ff 100%)"
+                  border="1px solid"
+                  borderColor="purple.100"
+                >
+                  <Flex align="center" gap="3">
+                    <Avatar.Root
+                      size="md"
+                      borderWidth="2px"
+                      borderColor="purple.400"
                     >
-                      <User size={18} />
-                      <Text fontWeight="500">Profile</Text>
+                      <Avatar.Fallback
+                        bg="linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
+                        color="white"
+                        fontWeight="700"
+                      >
+                        {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                      </Avatar.Fallback>
+                      <Avatar.Image src={user?.photo} />
+                    </Avatar.Root>
+                    <Box flex="1">
+                      <Text fontWeight="700" fontSize="md" color="gray.800">
+                        {user?.name || "User"}
+                      </Text>
+                      <Text
+                        fontSize="sm"
+                        color="purple.600"
+                        textTransform="capitalize"
+                        fontWeight="500"
+                      >
+                        {user?.role || "Member"}
+                      </Text>
                     </Box>
-                  </Link>
-                  <Link to="/order" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Box
-                      p="3"
-                      borderRadius="lg"
-                      _hover={{ bg: "purple.50" }}
-                      display="flex"
-                      alignItems="center"
-                      gap="2"
-                    >
-                      <Package size={18} />
-                      <Text fontWeight="500">Orders</Text>
-                    </Box>
-                  </Link>
-                  <Box
-                    p="3"
-                    borderRadius="lg"
-                    _hover={{ bg: "red.50" }}
-                    cursor="pointer"
-                    onClick={handleLogout}
-                    display="flex"
+                  </Flex>
+                </Box>
+
+                {/* User Menu Items */}
+                <Link to="/me" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Flex
                     alignItems="center"
-                    gap="2"
-                    color="red.600"
+                    gap="3"
+                    p="4"
+                    borderRadius="xl"
+                    bg="gray.50"
+                    border="1px solid"
+                    borderColor="gray.100"
+                    transition="all 0.2s ease"
+                    _hover={{ bg: "blue.50", borderColor: "blue.200" }}
                   >
-                    <LogOut size={18} />
-                    <Text fontWeight="500">Logout</Text>
+                    <Box p="2" borderRadius="lg" bg="blue.100" color="blue.600">
+                      <User size={18} strokeWidth={2.5} />
+                    </Box>
+                    <Box>
+                      <Text fontWeight="600" color="gray.800">
+                        My Profile
+                      </Text>
+                      <Text fontSize="sm" color="gray.500">
+                        View and edit profile
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Link>
+
+                <Link to="/order" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Flex
+                    alignItems="center"
+                    gap="3"
+                    p="4"
+                    borderRadius="xl"
+                    bg="gray.50"
+                    border="1px solid"
+                    borderColor="gray.100"
+                    transition="all 0.2s ease"
+                    _hover={{ bg: "green.50", borderColor: "green.200" }}
+                  >
+                    <Box
+                      p="2"
+                      borderRadius="lg"
+                      bg="green.100"
+                      color="green.600"
+                    >
+                      <Package size={18} strokeWidth={2.5} />
+                    </Box>
+                    <Box>
+                      <Text fontWeight="600" color="gray.800">
+                        My Orders
+                      </Text>
+                      <Text fontSize="sm" color="gray.500">
+                        Track your orders
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Link>
+
+                <Flex
+                  alignItems="center"
+                  gap="3"
+                  p="4"
+                  borderRadius="xl"
+                  bg="gray.50"
+                  border="1px solid"
+                  borderColor="gray.100"
+                  cursor="pointer"
+                  onClick={handleLogout}
+                  transition="all 0.2s ease"
+                  _hover={{ bg: "red.50", borderColor: "red.200" }}
+                >
+                  <Box p="2" borderRadius="lg" bg="red.100" color="red.600">
+                    <LogOut size={18} strokeWidth={2.5} />
                   </Box>
-                </>
-              )}
-            </VStack>
-          </Box>
-        )}
+                  <Box>
+                    <Text fontWeight="600" color="red.600">
+                      Log Out
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Sign out of account
+                    </Text>
+                  </Box>
+                </Flex>
+              </>
+            )}
+          </VStack>
+        </Box>
       </Box>
 
-      <style jsx>{`
+      {/* Animations */}
+      <style>{`
         @keyframes slideDown {
           from {
             opacity: 0;
@@ -489,6 +983,17 @@ function Header() {
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+        
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 0.8;
           }
         }
       `}</style>

@@ -1,32 +1,33 @@
-import React from "react";
-import Home from "../Pages/Home.jsx";
-import Login from "../Pages/Auth/Login.jsx";
-import Register from "../Pages/Auth/Register.jsx";
-import Product from "../Pages/Customer/Product.jsx";
-import ProductDetail from "../Pages/Customer/ProductDetail.jsx";
-import Checkout from "../Pages/Customer/Checkout.jsx";
-import Profile from "../Pages/Customer/Profile.jsx";
-import ProtectedRoute from "../Utils/ProtectedRoute.jsx";
+import { lazy, Suspense } from "react";
+import { useSelector } from "react-redux";
+import { Navigate, Route, Routes } from "react-router";
 import AdminRoute from "../Utils/AdminRoute.jsx";
-import Cart from "../Pages/Customer/Cart.jsx";
-import Order from '../Pages/Customer/Order.jsx'
-import Admin from "../Pages/Admin.jsx";
-import { Routes, Route } from "react-router";
-import {useSelector} from "react-redux";
-import {Navigate} from "react-router";
+import ProtectedRoute from "../Utils/ProtectedRoute.jsx";
+import LoadingFallback from "./LoadingFallback.jsx";
+
+// Lazy load all page components
+const Home = lazy(() => import("../Pages/Home.jsx"));
+const Login = lazy(() => import("../Pages/Auth/Login.jsx"));
+const Register = lazy(() => import("../Pages/Auth/Register.jsx"));
+const Product = lazy(() => import("../Pages/Customer/Product.jsx"));
+const ProductDetail = lazy(() => import("../Pages/Customer/ProductDetail.jsx"));
+const Checkout = lazy(() => import("../Pages/Customer/Checkout.jsx"));
+const Profile = lazy(() => import("../Pages/Customer/Profile.jsx"));
+const Cart = lazy(() => import("../Pages/Customer/Cart.jsx"));
+const Order = lazy(() => import("../Pages/Customer/Order.jsx"));
+const Admin = lazy(() => import("../Pages/Admin.jsx"));
 
 function AllRoutes() {
-
   const { user, IsAuth } = useSelector((state) => state.auth);
 
   return (
-    <>
+    <Suspense fallback={<LoadingFallback message="Loading page..." />}>
       <Routes>
         {/* Home Route */}
         <Route path="/" element={<Home />} />
 
         {/* Auth Route Public*/}
-         <Route
+        <Route
           path="/signin"
           element={
             IsAuth ? (
@@ -69,21 +70,36 @@ function AllRoutes() {
             </ProtectedRoute>
           }
         />
+
         {/* Cart Routes */}
-        <Route path="/cart" element={<ProtectedRoute>
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
               <Cart />
             </ProtectedRoute>
-          }/>
-        
+          }
+        />
+
         {/* Order page User */}
-          <Route path='/order' element={<ProtectedRoute>
+        <Route
+          path="/order"
+          element={
+            <ProtectedRoute>
               <Order />
-            </ProtectedRoute>} />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Checkout  */}
-        <Route path="/checkout"  element={<ProtectedRoute>
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
               <Checkout />
-            </ProtectedRoute>}/>
+            </ProtectedRoute>
+          }
+        />
 
         {/* Admin  */}
         <Route
@@ -95,7 +111,7 @@ function AllRoutes() {
           }
         />
       </Routes>
-    </>
+    </Suspense>
   );
 }
 

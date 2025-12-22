@@ -1,26 +1,25 @@
-import React, { useEffect, useCallback, useState } from "react";
-import { useSearchParams } from "react-router";
 import {
-  Spinner,
-  Heading,
-  Text,
+  Badge,
   Box,
+  Button,
+  Center,
+  Drawer,
   Flex,
   Grid,
-  Center,
-  Badge,
-  Button,
-  NativeSelect,
   IconButton,
-  Drawer,
+  NativeSelect,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
-import { Toaster, toaster } from "../../components/ui/toaster.jsx";
-import { X, Filter, Grid3x3, List, SlidersHorizontal } from "lucide-react";
 import axios from "axios";
-import { Action_Type } from "../../Redux/Product_Reducer/action.jsx";
-import { useSelector, useDispatch } from "react-redux";
-import ProductCard from "../../Component/ProductCard.jsx";
+import { Filter, Grid3x3, List } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router";
 import FilterSidebar from "../../Component/FilterSidebar.jsx";
+import ProductCard from "../../Component/ProductCard.jsx";
+import { Toaster, toaster } from "../../components/ui/toaster.jsx";
+import { Action_Type } from "../../Redux/Product_Reducer/action.jsx";
 
 const API_BASE_URL = "https://shopsy-ecomm.onrender.com/api/v1/Products";
 
@@ -89,6 +88,26 @@ function Product() {
     const fetchAllCategories = async () => {
       try {
         setCategoriesLoading(true);
+
+        // Check cache first
+        const cachedCategories = localStorage.getItem("productCategories");
+        const cacheTimestamp = localStorage.getItem(
+          "productCategoriesTimestamp"
+        );
+        const cacheExpiry = 15 * 60 * 1000; // 15 minutes
+
+        // Use cache if it's fresh (less than 15 minutes old)
+        if (
+          cachedCategories &&
+          cacheTimestamp &&
+          Date.now() - parseInt(cacheTimestamp) < cacheExpiry
+        ) {
+          setAllCategories(JSON.parse(cachedCategories));
+          setCategoriesLoading(false);
+          return;
+        }
+
+        // Fetch from API if cache is stale or missing
         const response = await axios.get(`${API_BASE_URL}?limit=100`);
 
         if (response.data?.data) {
@@ -99,7 +118,18 @@ function Product() {
                 .filter(Boolean)
             )
           ).sort();
+
           setAllCategories(uniqueCategories);
+
+          // Cache the categories
+          localStorage.setItem(
+            "productCategories",
+            JSON.stringify(uniqueCategories)
+          );
+          localStorage.setItem(
+            "productCategoriesTimestamp",
+            Date.now().toString()
+          );
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -141,8 +171,7 @@ function Product() {
       dispatch({
         type: Action_Type.GET_SUCCESS,
         payload: response.data,
-    });
-
+      });
     } catch (error) {
       console.error("❌ API Error:", error);
       dispatch({ type: Action_Type.GET_FAILURE });

@@ -1,12 +1,9 @@
-import User from "../Model/userModel.js";
-
-import { createSendToken } from "../Utils/jwt.js"
-
-import bcrypt from "bcryptjs"
-
+import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import User from "../Model/userModel.js";
+import { createSendToken, verifyToken } from "../Utils/jwt.js";
 
-dotenv.config({path:"./config.env"});
+dotenv.config({ path: "./config.env" });
 
 const SUPER_ADMIN = {
   email: process.env.SUPER_ADMIN_EMAIL,
@@ -22,7 +19,8 @@ export const Register = async (req, res) => {
     if (!name.trim() || !email.trim() || !password.trim()) {
       return res.status(400).json({
         status: "fail",
-        message: "Please provide all required fields: name, email, and password.",
+        message:
+          "Please provide all required fields: name, email, and password.",
       });
     }
 
@@ -33,7 +31,7 @@ export const Register = async (req, res) => {
         message: "This email is reserved. Please use a different email.",
       });
     }
-    
+
     const normalizedEmail = email.trim().toLowerCase();
 
     // 3️⃣ Check existing user (use `.lean()` for faster read)
@@ -133,14 +131,14 @@ export const Login = async (req, res) => {
   }
 };
 
-
 export const refreshToken = async (req, res) => {
   try {
     let token;
 
     // Get token from header or cookie
     if (
-      req.headers.authorization && req.headers.authorization.startsWith("Bearer")
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
     } else if (req.cookies.jwt) {
@@ -168,12 +166,11 @@ export const refreshToken = async (req, res) => {
     }
 
     // Generate new token automatically
-     createSendToken(user,200,res);
-     
+    createSendToken(user, 200, res);
   } catch (error) {
     res.status(401).json({
       status: "fail",
       message: "Invalid token",
     });
   }
-}
+};

@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Center,
-  Drawer,
   Flex,
   Grid,
   IconButton,
@@ -12,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { Filter, Grid3x3, List } from "lucide-react";
+import { Grid3x3, List } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router";
@@ -55,7 +54,6 @@ function Product() {
   // State management
   const [allCategories, setAllCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const [filters, setFilters] = useState(() => {
     const categoryParams = [];
@@ -283,52 +281,9 @@ function Product() {
           </Box>
         </Box>
 
-        {/* MOBILE FILTER DRAWER */}
-        <Drawer.Root
-          open={isMobileFilterOpen}
-          onOpenChange={(e) => setIsMobileFilterOpen(e.open)}
-          placement="left"
-        >
-          <Drawer.Backdrop />
-          <Drawer.Positioner>
-            <Drawer.Content>
-              <Drawer.Header>
-                <Drawer.Title>Filters</Drawer.Title>
-              </Drawer.Header>
-              <Drawer.Body p={4}>
-                <FilterSidebar
-                  allCategories={allCategories}
-                  categoriesLoading={categoriesLoading}
-                  filters={filters}
-                  handleFilterChange={handleFilterChange}
-                  clearFilters={clearFilters}
-                  sortValue={sortValue}
-                  priceRange={priceRange}
-                  clearAll={clearAll}
-                  onClose={() => setIsMobileFilterOpen(false)}
-                />
-              </Drawer.Body>
-            </Drawer.Content>
-          </Drawer.Positioner>
-        </Drawer.Root>
-
         {/* MAIN CONTENT */}
         <Box flex={1} w="100%">
           <Flex direction="column" gap={{ base: 4, md: 6 }}>
-            {/* MOBILE FILTER BUTTON */}
-            <Box display={{ base: "block", lg: "none" }}>
-              <Button
-                w="100%"
-                size={{ base: "md", sm: "lg" }}
-                colorPalette="purple"
-                variant="outline"
-                onClick={() => setIsMobileFilterOpen(true)}
-                leftIcon={<Filter size={18} />}
-              >
-                Filters {filters.length > 0 && `(${filters.length})`}
-              </Button>
-            </Box>
-
             {/* TOP BAR */}
             <Flex
               direction={{ base: "column", md: "row" }}
@@ -388,6 +343,64 @@ function Product() {
                 gap={3}
                 w={{ base: "100%", sm: "auto" }}
               >
+                {/* Mobile Category Filter Select */}
+                <Flex
+                  align="center"
+                  gap={2}
+                  w={{ base: "100%", sm: "auto" }}
+                  display={{ base: "flex", lg: "none" }}
+                >
+                  <Text
+                    fontSize="sm"
+                    fontWeight="bold"
+                    color="gray.700"
+                    whiteSpace="nowrap"
+                    display={{ base: "none", sm: "block" }}
+                  >
+                    Category:
+                  </Text>
+                  <NativeSelect.Root size={{ base: "sm", md: "sm" }} w="100%">
+                    <NativeSelect.Field
+                      value={filters[0] || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value) {
+                          // Clear existing filters and set new one
+                          setFilters([value]);
+                          setPage(1);
+                        } else {
+                          // Clear all filters
+                          clearFilters();
+                        }
+                      }}
+                    >
+                      <option value="">All Categories</option>
+                      {categoriesLoading ? (
+                        <option disabled>Loading...</option>
+                      ) : (
+                        allCategories.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))
+                      )}
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
+                  {filters.length > 0 && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      colorPalette="red"
+                      onClick={clearFilters}
+                      px={2}
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </Flex>
+
+                {/* Sort Dropdown */}
                 <Flex align="center" gap={2} w={{ base: "100%", sm: "auto" }}>
                   <Text
                     fontSize="sm"

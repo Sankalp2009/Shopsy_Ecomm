@@ -41,6 +41,14 @@ function Header() {
   const CartCount = items?.length || 0;
   const dispatch = useDispatch();
 
+  // Colors
+  const colors = {
+    gold: "#facc15",
+    goldDark: "#eab308",
+    navy: "#1e3a5f",
+    navyDark: "#0f172a",
+  };
+
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
@@ -73,13 +81,11 @@ function Header() {
       position="sticky"
       top="0"
       zIndex="1000"
-      bg={
-        isScrolled ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.95)"
-      }
+      bg={isScrolled ? "rgba(255, 255, 255, 0.9)" : "rgba(255, 255, 255, 0.95)"}
       backdropFilter="blur(20px) saturate(180%)"
       borderBottom="1px solid"
-      borderColor={isScrolled ? "gray.200" : "transparent"}
-      boxShadow={isScrolled ? "0 4px 30px rgba(0, 0, 0, 0.08)" : "none"}
+      borderColor={isScrolled ? "rgba(30, 58, 95, 0.1)" : "transparent"}
+      boxShadow={isScrolled ? "0 4px 30px rgba(0, 0, 0, 0.05)" : "none"}
       transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
     >
       <Box maxW="1400px" mx="auto" px={{ base: "4", md: "6", lg: "8" }}>
@@ -103,7 +109,7 @@ function Header() {
                 <Box
                   position="absolute"
                   inset="-4px"
-                  bg="linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%)"
+                  bg={`linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyDark} 100%)`}
                   borderRadius="2xl"
                   opacity="0.4"
                   filter="blur(12px)"
@@ -114,11 +120,11 @@ function Header() {
                 {/* Icon Container */}
                 <Box
                   position="relative"
-                  bg="linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%)"
+                  bg={`linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyDark} 100%)`}
                   p="3"
                   borderRadius="xl"
-                  boxShadow="0 8px 24px rgba(15, 23, 42, 0.5), inset 0 1px 1px rgba(255,255,255,0.1)"
-                  border="1px solid rgba(250, 204, 21, 0.3)"
+                  boxShadow={`0 8px 24px rgba(15, 23, 42, 0.5), inset 0 1px 1px rgba(255,255,255,0.1)`}
+                  border={`1px solid rgba(250, 204, 21, 0.3)`}
                   overflow="hidden"
                   _before={{
                     content: '""',
@@ -146,19 +152,19 @@ function Header() {
                     {/* Shopping Bag Body */}
                     <path
                       d="M3.5 8C3.5 7.44772 3.94772 7 4.5 7H19.5C20.0523 7 20.5 7.44772 20.5 8V19C20.5 20.1046 19.6046 21 18.5 21H5.5C4.39543 21 3.5 20.1046 3.5 19V8Z"
-                      fill="#facc15"
+                      fill={colors.gold}
                     />
                     {/* Bag Handles */}
                     <path
                       d="M8 7V5C8 3.34315 9.34315 2 11 2H13C14.6569 2 16 3.34315 16 5V7"
-                      stroke="#facc15"
+                      stroke={colors.gold}
                       strokeWidth="2.5"
                       strokeLinecap="round"
                     />
                     {/* Sparkle/Star Element */}
                     <path
                       d="M12 10L12.7 12.3L15 13L12.7 13.7L12 16L11.3 13.7L9 13L11.3 12.3L12 10Z"
-                      fill="#0f172a"
+                      fill={colors.navyDark}
                     />
                   </svg>
                 </Box>
@@ -170,16 +176,16 @@ function Header() {
                   right="-3px"
                   w="14px"
                   h="14px"
-                  bg="linear-gradient(135deg, #facc15 0%, #eab308 100%)"
+                  bg={`linear-gradient(135deg, ${colors.gold} 0%, ${colors.goldDark} 100%)`}
                   borderRadius="full"
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
-                  boxShadow="0 2px 8px rgba(250, 204, 21, 0.5)"
-                  border="2px solid #0f172a"
+                  boxShadow={`0 2px 8px rgba(250, 204, 21, 0.5)`}
+                  border={`2px solid ${colors.navyDark}`}
                   animation="pulse 2s ease-in-out infinite"
                 >
-                  <Sparkles size={7} color="#0f172a" strokeWidth={3} />
+                  <Sparkles size={7} color={colors.navyDark} strokeWidth={3} />
                 </Box>
               </Box>
 
@@ -188,9 +194,7 @@ function Header() {
                 <Flex alignItems="baseline" gap="0">
                   <Heading
                     size={{ base: "md", md: "lg" }}
-                    bgGradient="to-r"
-                    gradientFrom="#facc15"
-                    gradientTo="#eab308"
+                    bgGradient={`linear(to-r, ${colors.gold}, ${colors.goldDark})`}
                     bgClip="text"
                     fontWeight="900"
                     letterSpacing="-0.03em"
@@ -200,12 +204,12 @@ function Header() {
                   </Heading>
                   <Heading
                     size={{ base: "md", md: "lg" }}
-                    color="#0f172a"
+                    color={colors.navyDark}
                     fontWeight="900"
                     letterSpacing="-0.03em"
                     lineHeight="1"
                   >
-                    sy
+                    shopsy
                   </Heading>
                 </Flex>
                 <Flex
@@ -217,12 +221,12 @@ function Header() {
                   <Box
                     w="12px"
                     h="2px"
-                    bg="linear-gradient(90deg, #facc15, #1e3a5f)"
+                    bg={`linear-gradient(90deg, ${colors.gold}, ${colors.navy})`}
                     borderRadius="full"
                   />
                   <Text
                     fontSize="9px"
-                    color="#1e3a5f"
+                    color={colors.navy}
                     fontWeight="700"
                     letterSpacing="0.15em"
                     textTransform="uppercase"
@@ -232,7 +236,7 @@ function Header() {
                   <Box
                     w="12px"
                     h="2px"
-                    bg="linear-gradient(90deg, #1e3a5f, #facc15)"
+                    bg={`linear-gradient(90deg, ${colors.navy}, ${colors.gold})`}
                     borderRadius="full"
                   />
                 </Flex>
@@ -245,11 +249,11 @@ function Header() {
             display={{ base: "none", lg: "flex" }}
             gap="1"
             alignItems="center"
-            bg="gray.50"
+            bg="rgba(30, 58, 95, 0.05)"
             p="1.5"
             borderRadius="full"
             border="1px solid"
-            borderColor="gray.100"
+            borderColor="rgba(30, 58, 95, 0.08)"
           >
             {Links.map((el) => (
               <Link
@@ -269,13 +273,15 @@ function Header() {
                       ? "0 2px 8px rgba(0,0,0,0.08)"
                       : "none"
                   }
-                  color={isActiveLink(el.path) ? "purple.600" : "gray.600"}
+                  color={isActiveLink(el.path) ? colors.navy : "gray.600"}
                   fontWeight="600"
                   fontSize="sm"
                   transition="all 0.25s ease"
                   _hover={{
-                    bg: isActiveLink(el.path) ? "white" : "gray.100",
-                    color: "purple.600",
+                    bg: isActiveLink(el.path)
+                      ? "white"
+                      : "rgba(255,255,255,0.5)",
+                    color: colors.navy,
                   }}
                 >
                   <el.icon size={16} strokeWidth={2.5} />
@@ -297,13 +303,15 @@ function Header() {
                       ? "0 2px 8px rgba(0,0,0,0.08)"
                       : "none"
                   }
-                  color={isActiveLink("/admin") ? "purple.600" : "gray.600"}
+                  color={isActiveLink("/admin") ? colors.navy : "gray.600"}
                   fontWeight="600"
                   fontSize="sm"
                   transition="all 0.25s ease"
                   _hover={{
-                    bg: isActiveLink("/admin") ? "white" : "gray.100",
-                    color: "purple.600",
+                    bg: isActiveLink("/admin")
+                      ? "white"
+                      : "rgba(255,255,255,0.5)",
+                    color: colors.navy,
                   }}
                 >
                   <Settings size={16} strokeWidth={2.5} />
@@ -324,14 +332,13 @@ function Header() {
                 <Link to="/signin">
                   <Button
                     variant="ghost"
-                    color="gray.700"
+                    color={colors.navyDark}
                     size="md"
                     fontWeight="600"
                     borderRadius="full"
                     px="6"
                     _hover={{
-                      bg: "gray.100",
-                      color: "purple.600",
+                      bg: "rgba(30, 58, 95, 0.05)",
                     }}
                     transition="all 0.25s ease"
                   >
@@ -342,16 +349,16 @@ function Header() {
                   <Button
                     position="relative"
                     overflow="hidden"
-                    bg="linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)"
+                    bg={`linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyDark} 100%)`}
                     color="white"
                     size="md"
                     fontWeight="600"
                     borderRadius="full"
                     px="6"
-                    boxShadow="0 4px 15px rgba(99, 102, 241, 0.4)"
+                    boxShadow={`0 4px 15px rgba(30, 58, 95, 0.3)`}
                     _hover={{
                       transform: "translateY(-2px)",
-                      boxShadow: "0 8px 25px rgba(99, 102, 241, 0.5)",
+                      boxShadow: `0 8px 25px rgba(30, 58, 95, 0.4)`,
                     }}
                     _active={{
                       transform: "translateY(0)",
@@ -365,7 +372,7 @@ function Header() {
                       width: "100%",
                       height: "100%",
                       background:
-                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                        "linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.2), transparent)",
                       transition: "left 0.5s ease",
                     }}
                     _hover_before={{
@@ -373,8 +380,8 @@ function Header() {
                     }}
                   >
                     <Flex align="center" gap="2">
-                      <Sparkles size={16} />
-                      Get Started
+                      <Sparkles size={16} color={colors.gold} />
+                      <Text>Get Started</Text>
                     </Flex>
                   </Button>
                 </Link>
@@ -388,25 +395,29 @@ function Header() {
                     cursor="pointer"
                     p="2.5"
                     borderRadius="xl"
-                    bg="gray.50"
+                    bg="rgba(30, 58, 95, 0.05)"
                     border="1px solid"
-                    borderColor="gray.100"
+                    borderColor="rgba(30, 58, 95, 0.1)"
                     transition="all 0.25s ease"
                     _hover={{
-                      bg: "purple.50",
-                      borderColor: "purple.200",
+                      bg: "rgba(250, 204, 21, 0.1)",
+                      borderColor: colors.gold,
                       transform: "translateY(-2px)",
-                      boxShadow: "0 4px 12px rgba(139, 92, 246, 0.15)",
+                      boxShadow: `0 4px 12px rgba(250, 204, 21, 0.15)`,
                     }}
                   >
-                    <ShoppingCart size={20} strokeWidth={2} color="#6366f1" />
+                    <ShoppingCart
+                      size={20}
+                      strokeWidth={2}
+                      color={colors.navy}
+                    />
                     {CartCount > 0 && (
                       <Badge
                         position="absolute"
                         top="-2"
                         right="-2"
-                        bg="linear-gradient(135deg, #ef4444 0%, #f97316 100%)"
-                        color="white"
+                        bg={`linear-gradient(135deg, ${colors.gold} 0%, ${colors.goldDark} 100%)`}
+                        color={colors.navyDark}
                         borderRadius="full"
                         fontSize="xs"
                         minW="20px"
@@ -415,7 +426,7 @@ function Header() {
                         alignItems="center"
                         justifyContent="center"
                         fontWeight="700"
-                        boxShadow="0 2px 8px rgba(239, 68, 68, 0.4)"
+                        boxShadow={`0 2px 8px rgba(250, 204, 21, 0.4)`}
                         border="2px solid white"
                       >
                         {CartCount > 9 ? "9+" : CartCount}
@@ -437,25 +448,24 @@ function Header() {
                       p="2"
                       pr="3"
                       borderRadius="full"
-                      bg="gray.50"
+                      bg="rgba(30, 58, 95, 0.05)"
                       border="1px solid"
-                      borderColor="gray.100"
+                      borderColor="rgba(30, 58, 95, 0.1)"
                       transition="all 0.25s ease"
                       _hover={{
-                        bg: "purple.50",
-                        borderColor: "purple.200",
-                        boxShadow: "0 4px 12px rgba(139, 92, 246, 0.1)",
+                        bg: "rgba(30, 58, 95, 0.08)",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
                       }}
                     >
                       <Avatar.Root
                         size="sm"
                         borderWidth="2px"
-                        borderColor="purple.400"
-                        boxShadow="0 0 0 2px rgba(139, 92, 246, 0.2)"
+                        borderColor={colors.gold}
+                        boxShadow={`0 0 0 2px rgba(30, 58, 95, 0.1)`}
                       >
                         <Avatar.Fallback
-                          bg="linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
-                          color="white"
+                          bg={`linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyDark} 100%)`}
+                          color={colors.gold}
                           fontWeight="700"
                         >
                           {user?.name?.charAt(0)?.toUpperCase() || "U"}
@@ -466,7 +476,7 @@ function Header() {
                         <Text
                           fontSize="sm"
                           fontWeight="600"
-                          color="gray.800"
+                          color={colors.navyDark}
                           lineHeight="1.2"
                         >
                           {user?.name?.split(" ")[0] || "User"}
@@ -499,19 +509,19 @@ function Header() {
                           p="4"
                           mb="2"
                           borderRadius="xl"
-                          bg="linear-gradient(135deg, #f0f0ff 0%, #faf5ff 100%)"
+                          bg={`linear-gradient(135deg, rgba(30, 58, 95, 0.05) 0%, rgba(250, 204, 21, 0.1) 100%)`}
                           border="1px solid"
-                          borderColor="purple.100"
+                          borderColor="rgba(30, 58, 95, 0.1)"
                         >
                           <Flex align="center" gap="3">
                             <Avatar.Root
                               size="md"
                               borderWidth="2px"
-                              borderColor="purple.400"
+                              borderColor={colors.gold}
                             >
                               <Avatar.Fallback
-                                bg="linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
-                                color="white"
+                                bg={`linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyDark} 100%)`}
+                                color={colors.gold}
                                 fontWeight="700"
                                 fontSize="md"
                               >
@@ -523,14 +533,14 @@ function Header() {
                               <Text
                                 fontWeight="700"
                                 fontSize="md"
-                                color="gray.800"
+                                color={colors.navyDark}
                                 truncate
                               >
                                 {user?.name || "User"}
                               </Text>
                               <Text
                                 fontSize="sm"
-                                color="purple.600"
+                                color={colors.navy}
                                 textTransform="capitalize"
                                 fontWeight="500"
                               >
@@ -666,14 +676,14 @@ function Header() {
                   border="1px solid"
                   borderColor="gray.100"
                 >
-                  <ShoppingCart size={20} color="#6366f1" />
+                  <ShoppingCart size={20} color={colors.navy} />
                   {CartCount > 0 && (
                     <Badge
                       position="absolute"
                       top="-2"
                       right="-2"
-                      bg="linear-gradient(135deg, #ef4444 0%, #f97316 100%)"
-                      color="white"
+                      bg={`linear-gradient(135deg, ${colors.gold} 0%, ${colors.goldDark} 100%)`}
+                      color={colors.navyDark}
                       borderRadius="full"
                       fontSize="xs"
                       minW="18px"
@@ -695,14 +705,15 @@ function Header() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               p="2.5"
               borderRadius="xl"
-              bg={isMobileMenuOpen ? "purple.50" : "gray.50"}
+              bg={isMobileMenuOpen ? "rgba(30, 58, 95, 0.05)" : "gray.50"}
               border="1px solid"
-              borderColor={isMobileMenuOpen ? "purple.200" : "gray.100"}
-              color={isMobileMenuOpen ? "purple.600" : "gray.600"}
+              borderColor={
+                isMobileMenuOpen ? "rgba(30, 58, 95, 0.1)" : "gray.100"
+              }
+              color={isMobileMenuOpen ? colors.navy : "gray.600"}
               transition="all 0.25s ease"
               _hover={{
-                bg: "purple.50",
-                borderColor: "purple.200",
+                bg: "rgba(30, 58, 95, 0.1)",
               }}
             >
               {isMobileMenuOpen ? <X size={22} /> : <MenuIcon size={22} />}
@@ -733,25 +744,27 @@ function Header() {
                   gap="3"
                   p="4"
                   borderRadius="xl"
-                  bg={isActiveLink(el.path) ? "purple.50" : "gray.50"}
+                  bg={
+                    isActiveLink(el.path) ? "rgba(30, 58, 95, 0.05)" : "gray.50"
+                  }
                   border="1px solid"
                   borderColor={
-                    isActiveLink(el.path) ? "purple.200" : "gray.100"
+                    isActiveLink(el.path) ? "rgba(30, 58, 95, 0.1)" : "gray.100"
                   }
                   transition="all 0.2s ease"
-                  _hover={{ bg: "purple.50", borderColor: "purple.200" }}
+                  _hover={{ bg: "rgba(30, 58, 95, 0.08)" }}
                 >
                   <Box
                     p="2"
                     borderRadius="lg"
-                    bg={isActiveLink(el.path) ? "purple.100" : "white"}
-                    color={isActiveLink(el.path) ? "purple.600" : "gray.600"}
+                    bg={isActiveLink(el.path) ? "white" : "white"}
+                    color={isActiveLink(el.path) ? colors.navy : "gray.600"}
                   >
                     <el.icon size={18} strokeWidth={2.5} />
                   </Box>
                   <Text
                     fontWeight="600"
-                    color={isActiveLink(el.path) ? "purple.700" : "gray.700"}
+                    color={isActiveLink(el.path) ? colors.navyDark : "gray.700"}
                   >
                     {el.content}
                   </Text>
@@ -770,25 +783,33 @@ function Header() {
                   gap="3"
                   p="4"
                   borderRadius="xl"
-                  bg={isActiveLink("/admin") ? "purple.50" : "gray.50"}
+                  bg={
+                    isActiveLink("/admin")
+                      ? "rgba(30, 58, 95, 0.05)"
+                      : "gray.50"
+                  }
                   border="1px solid"
                   borderColor={
-                    isActiveLink("/admin") ? "purple.200" : "gray.100"
+                    isActiveLink("/admin")
+                      ? "rgba(30, 58, 95, 0.1)"
+                      : "gray.100"
                   }
                   transition="all 0.2s ease"
-                  _hover={{ bg: "purple.50", borderColor: "purple.200" }}
+                  _hover={{ bg: "rgba(30, 58, 95, 0.08)" }}
                 >
                   <Box
                     p="2"
                     borderRadius="lg"
-                    bg={isActiveLink("/admin") ? "purple.100" : "white"}
-                    color={isActiveLink("/admin") ? "purple.600" : "gray.600"}
+                    bg={isActiveLink("/admin") ? "white" : "white"}
+                    color={isActiveLink("/admin") ? colors.navy : "gray.600"}
                   >
                     <Settings size={18} strokeWidth={2.5} />
                   </Box>
                   <Text
                     fontWeight="600"
-                    color={isActiveLink("/admin") ? "purple.700" : "gray.700"}
+                    color={
+                      isActiveLink("/admin") ? colors.navyDark : "gray.700"
+                    }
                   >
                     Admin Dashboard
                   </Text>
@@ -826,18 +847,18 @@ function Header() {
                 >
                   <Button
                     w="full"
-                    bg="linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)"
+                    bg={`linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyDark} 100%)`}
                     color="white"
                     size="lg"
                     borderRadius="xl"
                     fontWeight="600"
-                    boxShadow="0 4px 15px rgba(99, 102, 241, 0.3)"
+                    boxShadow="0 4px 15px rgba(30, 58, 95, 0.3)"
                     _hover={{
-                      boxShadow: "0 6px 20px rgba(99, 102, 241, 0.4)",
+                      boxShadow: "0 6px 20px rgba(30, 58, 95, 0.4)",
                     }}
                   >
                     <Flex align="center" gap="2">
-                      <Sparkles size={18} />
+                      <Sparkles size={18} color={colors.gold} />
                       Get Started Free
                     </Flex>
                   </Button>
@@ -849,19 +870,19 @@ function Header() {
                 <Box
                   p="4"
                   borderRadius="xl"
-                  bg="linear-gradient(135deg, #f0f0ff 0%, #faf5ff 100%)"
+                  bg="linear-gradient(135deg, rgba(30, 58, 95, 0.05) 0%, rgba(250, 204, 21, 0.1) 100%)"
                   border="1px solid"
-                  borderColor="purple.100"
+                  borderColor="rgba(30, 58, 95, 0.1)"
                 >
                   <Flex align="center" gap="3">
                     <Avatar.Root
                       size="md"
                       borderWidth="2px"
-                      borderColor="purple.400"
+                      borderColor={colors.gold}
                     >
                       <Avatar.Fallback
-                        bg="linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
-                        color="white"
+                        bg={`linear-gradient(135deg, ${colors.navy} 0%, ${colors.navyDark} 100%)`}
+                        color={colors.gold}
                         fontWeight="700"
                       >
                         {user?.name?.charAt(0)?.toUpperCase() || "U"}
@@ -869,12 +890,16 @@ function Header() {
                       <Avatar.Image src={user?.photo} />
                     </Avatar.Root>
                     <Box flex="1">
-                      <Text fontWeight="700" fontSize="md" color="gray.800">
+                      <Text
+                        fontWeight="700"
+                        fontSize="md"
+                        color={colors.navyDark}
+                      >
                         {user?.name || "User"}
                       </Text>
                       <Text
                         fontSize="sm"
-                        color="purple.600"
+                        color={colors.navy}
                         textTransform="capitalize"
                         fontWeight="500"
                       >
